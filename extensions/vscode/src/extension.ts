@@ -1,17 +1,17 @@
 import * as os from "node:os";
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { Engine } from "@mdreader/engine";
+import { Engine } from "@spokedown/engine";
 import { Controller, readConfig } from "./controller.js";
 
-export interface MdReaderApi {
+export interface SpokedownApi {
   controller: Controller;
   engine: Engine;
 }
 
-export function activate(context: vscode.ExtensionContext): MdReaderApi {
-  const conf = vscode.workspace.getConfiguration("mdReader");
-  const dataDir = conf.get<string>("dataDirectory") || path.join(os.homedir(), ".cache", "mdreader");
+export function activate(context: vscode.ExtensionContext): SpokedownApi {
+  const conf = vscode.workspace.getConfiguration("spokedown");
+  const dataDir = conf.get<string>("dataDirectory") || path.join(os.homedir(), ".cache", "spokedown");
   const engine = new Engine({
     models: readConfig().models,
     modelsDir: path.join(dataDir, "models"),
@@ -20,7 +20,7 @@ export function activate(context: vscode.ExtensionContext): MdReaderApi {
   });
   const controller = new Controller(engine, context.extensionUri);
 
-  const cmd = (id: string, fn: () => unknown) => context.subscriptions.push(vscode.commands.registerCommand(`mdReader.${id}`, fn));
+  const cmd = (id: string, fn: () => unknown) => context.subscriptions.push(vscode.commands.registerCommand(`spokedown.${id}`, fn));
   cmd("toggle", () => controller.toggle());
   cmd("readFromCursor", () => controller.readFromCursor());
   cmd("readFile", () => controller.readFile());
@@ -46,7 +46,7 @@ export function activate(context: vscode.ExtensionContext): MdReaderApi {
   context.subscriptions.push(
     controller,
     vscode.workspace.onDidChangeConfiguration((e) => {
-      if (e.affectsConfiguration("mdReader")) controller.onConfigChanged(e);
+      if (e.affectsConfiguration("spokedown")) controller.onConfigChanged(e);
     }),
     { dispose: () => void engine.dispose() },
   );

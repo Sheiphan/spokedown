@@ -1,5 +1,5 @@
 // Keep a speech script's source offsets valid while the user edits the document.
-import type { SpeechScript } from "@mdreader/core";
+import type { SpeechScript } from "@spokedown/core";
 
 export interface TextChange {
   /** Offset in the document before this batch of changes. */

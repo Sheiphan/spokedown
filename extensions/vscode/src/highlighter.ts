@@ -14,17 +14,17 @@ export interface HighlightState {
 export class Highlighter implements vscode.Disposable {
   private block = vscode.window.createTextEditorDecorationType({
     isWholeLine: true,
-    backgroundColor: new vscode.ThemeColor("mdReader.blockHighlightBackground"),
+    backgroundColor: new vscode.ThemeColor("spokedown.blockHighlightBackground"),
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
   });
   private sentence = vscode.window.createTextEditorDecorationType({
-    backgroundColor: new vscode.ThemeColor("mdReader.sentenceHighlightBackground"),
-    overviewRulerColor: new vscode.ThemeColor("mdReader.wordHighlightBackground"),
+    backgroundColor: new vscode.ThemeColor("spokedown.sentenceHighlightBackground"),
+    overviewRulerColor: new vscode.ThemeColor("spokedown.wordHighlightBackground"),
     overviewRulerLane: vscode.OverviewRulerLane.Center,
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
   });
   private word = vscode.window.createTextEditorDecorationType({
-    backgroundColor: new vscode.ThemeColor("mdReader.wordHighlightBackground"),
+    backgroundColor: new vscode.ThemeColor("spokedown.wordHighlightBackground"),
     borderRadius: "3px",
     rangeBehavior: vscode.DecorationRangeBehavior.ClosedClosed,
   });

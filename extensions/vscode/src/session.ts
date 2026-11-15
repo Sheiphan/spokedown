@@ -1,7 +1,7 @@
 // Playback state machine: synthesizes ahead, plays segment by segment, tracks the
 // spoken word, and handles pause / seek / navigation. No vscode imports (unit-testable).
-import { wordIndexAt, type Segment, type SpeechScript, type TimingQuality } from "@mdreader/core";
-import type { SegmentAudio } from "@mdreader/engine";
+import { wordIndexAt, type Segment, type SpeechScript, type TimingQuality } from "@spokedown/core";
+import type { SegmentAudio } from "@spokedown/engine";
 
 export interface AudioSink {
   /** Play `pcm` from `startSec`. Resolves "ended" at the natural end, "interrupted" after stop(). */

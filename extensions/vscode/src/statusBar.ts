@@ -13,18 +13,18 @@ function remaining(u: SessionUpdate, all: { words: unknown[] }[], speed: number)
 }
 
 export class StatusBar implements vscode.Disposable {
-  private main = vscode.window.createStatusBarItem("mdReader.main", vscode.StatusBarAlignment.Right, 200);
-  private speed = vscode.window.createStatusBarItem("mdReader.speed", vscode.StatusBarAlignment.Right, 199);
-  private back = vscode.window.createStatusBarItem("mdReader.follow", vscode.StatusBarAlignment.Right, 198);
+  private main = vscode.window.createStatusBarItem("spokedown.main", vscode.StatusBarAlignment.Right, 200);
+  private speed = vscode.window.createStatusBarItem("spokedown.speed", vscode.StatusBarAlignment.Right, 199);
+  private back = vscode.window.createStatusBarItem("spokedown.follow", vscode.StatusBarAlignment.Right, 198);
 
   constructor() {
-    this.main.name = "Markdown Reader";
-    this.speed.name = "Markdown Reader Speed";
-    this.speed.command = "mdReader.setSpeed";
-    this.back.name = "Markdown Reader: Back to Reading";
+    this.main.name = "Spokedown";
+    this.speed.name = "Spokedown Speed";
+    this.speed.command = "spokedown.setSpeed";
+    this.back.name = "Spokedown: Back to Reading";
     this.back.text = "$(eye) Back to reading";
     this.back.tooltip = "Scroll to the sentence being read and follow it again";
-    this.back.command = "mdReader.followReading";
+    this.back.command = "spokedown.followReading";
   }
 
   /** Shown when no reading session is active. */
@@ -37,7 +37,7 @@ export class StatusBar implements vscode.Disposable {
     }
     this.main.text = "$(unmute) Read";
     this.main.tooltip = `Read aloud from the cursor (${key("R")})`;
-    this.main.command = "mdReader.readFromCursor";
+    this.main.command = "spokedown.readFromCursor";
     this.main.backgroundColor = undefined;
     this.main.show();
   }
@@ -45,7 +45,7 @@ export class StatusBar implements vscode.Disposable {
   update(u: SessionUpdate, segments: { words: unknown[] }[], speed: number, model: string): void {
     const pct = segments.length ? Math.round((u.index / segments.length) * 100) : 0;
     const left = remaining(u, segments, speed);
-    this.main.command = "mdReader.toggle";
+    this.main.command = "spokedown.toggle";
     switch (u.state) {
       case "loading":
         this.main.text = "$(loading~spin) Preparing…";

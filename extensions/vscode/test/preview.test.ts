@@ -2,7 +2,7 @@
 import fs from "node:fs";
 import path from "node:path";
 import { describe, expect, it } from "vitest";
-import { buildSpeechScript } from "@mdreader/core";
+import { buildSpeechScript } from "@spokedown/core";
 import { renderPreviewHtml } from "../src/previewRender.js";
 import { SourceMap } from "../src/webview/sourceMap.js";
 import { startPointAtOffset } from "../src/startPoint.js";

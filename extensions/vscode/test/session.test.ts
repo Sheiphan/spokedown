@@ -1,6 +1,6 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from "vitest";
-import { buildSpeechScript, type Segment, type SpeechScript } from "@mdreader/core";
-import type { SegmentAudio } from "@mdreader/engine";
+import { buildSpeechScript, type Segment, type SpeechScript } from "@spokedown/core";
+import type { SegmentAudio } from "@spokedown/engine";
 import { ReadingSession, type SessionUpdate } from "../src/session.js";
 import { SilentSink } from "../src/sinks.js";
 

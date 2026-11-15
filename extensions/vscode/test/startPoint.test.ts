@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSpeechScript } from "@mdreader/core";
+import { buildSpeechScript } from "@spokedown/core";
 import { startPointForLine } from "../src/startPoint.js";
 
 const DOC = [

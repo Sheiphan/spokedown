@@ -1,10 +1,10 @@
 /* Read-along preview: highlights and controls on top of VS Code's markdown.css */
 
 ::highlight(mdr-sentence) {
-  background-color: var(--vscode-mdReader-sentenceHighlightBackground, rgba(79, 163, 255, 0.11));
+  background-color: var(--vscode-spokedown-sentenceHighlightBackground, rgba(79, 163, 255, 0.11));
 }
 ::highlight(mdr-word) {
-  background-color: var(--vscode-mdReader-wordHighlightBackground, rgba(230, 180, 34, 0.4));
+  background-color: var(--vscode-spokedown-wordHighlightBackground, rgba(230, 180, 34, 0.4));
 }
 ::highlight(mdr-marker) {
   text-decoration: underline 2px var(--vscode-focusBorder, #3794ff);
@@ -12,8 +12,8 @@
 }
 
 .mdr-block {
-  background-color: var(--vscode-mdReader-blockHighlightBackground, rgba(255, 255, 255, 0.045));
-  box-shadow: 0 0 0 6px var(--vscode-mdReader-blockHighlightBackground, rgba(255, 255, 255, 0.045));
+  background-color: var(--vscode-spokedown-blockHighlightBackground, rgba(255, 255, 255, 0.045));
+  box-shadow: 0 0 0 6px var(--vscode-spokedown-blockHighlightBackground, rgba(255, 255, 255, 0.045));
   border-radius: 4px;
   transition: background-color 120ms ease;
 }

@@ -4,7 +4,7 @@ import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { parseArgs } from "node:util";
-import { buildSpeechScript } from "@mdreader/core";
+import { buildSpeechScript } from "@spokedown/core";
 import { Engine, encodeWav } from "../src/index.js";
 
 const { values, positionals } = parseArgs({
@@ -26,7 +26,7 @@ const script = await buildSpeechScript(src, { fileName: path.basename(file) });
 const from = Number(values.from);
 const segs = script.segments.slice(from, from + Number(values.count));
 
-const home = path.join(os.homedir(), ".cache", "mdreader");
+const home = path.join(os.homedir(), ".cache", "spokedown");
 const engine = new Engine({ modelsDir: path.join(home, "models"), cacheDir: path.join(home, "audio") });
 const t0 = performance.now();
 await engine.prepare(values.model!, (e) => {

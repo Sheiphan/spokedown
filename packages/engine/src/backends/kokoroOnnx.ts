@@ -1,6 +1,6 @@
 // Kokoro-82M via ONNX Runtime (Node). The "-timestamped" export has a second output,
 // `durations` (frames per input token), which gives exact word timings.
-import type { WordTiming } from "@mdreader/core";
+import type { WordTiming } from "@spokedown/core";
 import type { KokoroDtype, ProgressEvent, SynthesisRequest, SynthesisResult, TtsBackend, VoiceInfo } from "../types.js";
 
 const SAMPLE_RATE = 24000;

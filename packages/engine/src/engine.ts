@@ -1,4 +1,4 @@
-import { alignWordTimings, type Word } from "@mdreader/core";
+import { alignWordTimings, type Word } from "@spokedown/core";
 import { AudioCache, cacheKey } from "./cache.js";
 import { BUILTIN_MODELS } from "./catalog.js";
 import { KokoroOnnxBackend } from "./backends/kokoroOnnx.js";

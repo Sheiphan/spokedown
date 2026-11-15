@@ -3,7 +3,7 @@
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { buildSpeechScript } from "@mdreader/core";
+import { buildSpeechScript } from "@spokedown/core";
 import { KokoroOnnxBackend } from "../src/index.js";
 
 const [file, segId, dtype = "fp32"] = process.argv.slice(2);
@@ -11,7 +11,7 @@ const src = await fs.readFile(file!, "utf8");
 const seg = (await buildSpeechScript(src)).segments[Number(segId)]!;
 console.log(`segment ${segId}: ${seg.text}\n`);
 
-const b = new KokoroOnnxBackend({ id: "k", modelId: "onnx-community/Kokoro-82M-v1.0-ONNX-timestamped", dtype: dtype as "fp32", modelsDir: path.join(os.homedir(), ".cache/mdreader/models") });
+const b = new KokoroOnnxBackend({ id: "k", modelId: "onnx-community/Kokoro-82M-v1.0-ONNX-timestamped", dtype: dtype as "fp32", modelsDir: path.join(os.homedir(), ".cache/spokedown/models") });
 await b.init();
 const tts = (b as unknown as { tts: { model: (i: unknown) => Promise<unknown>; stream: (s: unknown, o: unknown) => AsyncIterable<{ phonemes: string; text: string }> } }).tts;
 let modelMs = 0;

@@ -1,5 +1,5 @@
 import { describe, expect, it } from "vitest";
-import { buildSpeechScript } from "@mdreader/core";
+import { buildSpeechScript } from "@spokedown/core";
 import { shiftOffset, shiftScript } from "../src/shift.js";
 
 describe("shiftOffset", () => {

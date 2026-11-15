@@ -1,4 +1,4 @@
-# Read Aloud Markdown
+# Spokedown
 
 A VS Code extension that reads Markdown aloud with a natural, fully local voice and
 highlights each word **in the editor itself** as it is spoken — plus a read-along
@@ -43,12 +43,12 @@ Everything runs on your machine. No account, no API key, no telemetry.
 Requirements: macOS, Node 20+, [pnpm](https://pnpm.io) 9+, VS Code 1.100+.
 
 ```bash
-git clone https://github.com/Sheiphan/read-aloud-markdown.git
-cd read-aloud-markdown
+git clone https://github.com/Sheiphan/spokedown.git
+cd spokedown
 pnpm install
 pnpm -r build
 # link the extension into VS Code
-ln -s "$PWD/extensions/vscode" ~/.vscode/extensions/local.markdown-reader-tts-0.1.0
+ln -s "$PWD/extensions/vscode" ~/.vscode/extensions/local.spokedown-0.1.0
 ```
 
 Then run **Developer: Reload Window** in VS Code (twice the first time — VS Code
@@ -56,7 +56,7 @@ refreshes its extension cache on the first reload). Open a Markdown file and pre
 **⌃⌥R**, or click **Read** in the status bar.
 
 On first use the Kokoro model (326 MB) is downloaded from Hugging Face into
-`~/.cache/mdreader/models`. That download is the only network access.
+`~/.cache/spokedown/models`. That download is the only network access.
 
 ## Usage
 
@@ -69,16 +69,16 @@ On first use the Kokoro model (326 MB) is downloaded from Hugging Face into
 | Faster / slower | ⌃⌥= / ⌃⌥- |
 | Stop | ⌃⌥S |
 
-Command palette (**Markdown Reader: …**): *Open Read-Along Preview*, *Read Selection*,
+Command palette (**Spokedown: …**): *Open Read-Along Preview*, *Read Selection*,
 *Read File from Start*, *Select Voice…*, *Select Model…*, *Set Speed…*,
 *Show Spoken Script* (exactly what will be said), *Clear Audio Cache*.
 
-Settings live under `mdReader.*`: model, voice, speed, how to read code / tables /
+Settings live under `spokedown.*`: model, voice, speed, how to read code / tables /
 equations / diagrams / frontmatter, number precision, highlight timing
-(`mdReader.highlight.leadMs`, `mdReader.audioLatencyMs`) and extra models:
+(`spokedown.highlight.leadMs`, `spokedown.audioLatencyMs`) and extra models:
 
 ```jsonc
-"mdReader.models": [
+"spokedown.models": [
   { "id": "mlx", "type": "openai", "baseUrl": "http://localhost:8000", "model": "mlx-community/Kokoro-82M-bf16" },
   { "id": "kokoro-fp16", "type": "kokoro-onnx", "modelId": "onnx-community/Kokoro-82M-v1.0-ONNX-timestamped", "dtype": "fp16" }
 ]

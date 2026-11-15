@@ -1,4 +1,4 @@
-import type { TimingQuality, WordTiming } from "@mdreader/core";
+import type { TimingQuality, WordTiming } from "@spokedown/core";
 
 export interface SynthesisRequest {
   text: string;
@@ -47,7 +47,7 @@ export interface TtsBackend {
 
 export type KokoroDtype = "fp32" | "fp16" | "q8" | "q4" | "q4f16";
 
-/** User-configurable model entry (VS Code setting `mdReader.models`). */
+/** User-configurable model entry (VS Code setting `spokedown.models`). */
 export type ModelConfig =
   | { id: string; type: "kokoro-onnx"; label?: string; modelId: string; dtype: KokoroDtype }
   | { id: string; type: "openai"; label?: string; baseUrl: string; model: string; apiKey?: string; voices?: string[]; defaultVoice?: string }

@@ -1,5 +1,5 @@
 // Where to start reading for a cursor on a given line. No vscode imports (unit-testable).
-import { segmentAtOffset, type SpeechScript } from "@mdreader/core";
+import { segmentAtOffset, type SpeechScript } from "@spokedown/core";
 
 export interface StartPoint {
   index: number;

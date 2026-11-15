@@ -1,5 +1,5 @@
 {
-  "name": "@mdreader/engine",
+  "name": "@spokedown/engine",
   "version": "0.1.0",
   "private": true,
   "type": "module",
@@ -19,7 +19,7 @@
   },
   "dependencies": {
     "@huggingface/transformers": "3.8.1",
-    "@mdreader/core": "workspace:*",
+    "@spokedown/core": "workspace:*",
     "kokoro-js": "1.2.1"
   },
   "description": "Local TTS backends (Kokoro ONNX, OpenAI-compatible, macOS say) with word timings and caching.",
@@ -27,11 +27,11 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Sheiphan/read-aloud-markdown.git",
+    "url": "https://github.com/Sheiphan/spokedown.git",
     "directory": "packages/engine"
   },
-  "homepage": "https://github.com/Sheiphan/read-aloud-markdown#readme",
+  "homepage": "https://github.com/Sheiphan/spokedown#readme",
   "bugs": {
-    "url": "https://github.com/Sheiphan/read-aloud-markdown/issues"
+    "url": "https://github.com/Sheiphan/spokedown/issues"
   }
 }

@@ -44,7 +44,7 @@ export class MacSayBackend implements TtsBackend {
   }
 
   async synthesize(req: SynthesisRequest, signal?: AbortSignal): Promise<SynthesisResult> {
-    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "mdreader-say-"));
+    const dir = await fs.mkdtemp(path.join(os.tmpdir(), "spokedown-say-"));
     try {
       const txt = path.join(dir, "in.txt");
       const wav = path.join(dir, "out.wav");

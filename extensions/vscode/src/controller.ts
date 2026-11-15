@@ -1,8 +1,8 @@
 // Connects VS Code (editors, commands, settings) to the reading session and engine.
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { buildSpeechScript, segmentAtOffset, type ReaderOptionsInput, type SpeechScript } from "@mdreader/core";
-import { BUILTIN_MODELS, type Engine, type ModelConfig } from "@mdreader/engine";
+import { buildSpeechScript, segmentAtOffset, type ReaderOptionsInput, type SpeechScript } from "@spokedown/core";
+import { BUILTIN_MODELS, type Engine, type ModelConfig } from "@spokedown/engine";
 import { Highlighter } from "./highlighter.js";
 import { ReadingSession, type AudioSink, type SessionUpdate } from "./session.js";
 import { AfplaySink, SilentSink } from "./sinks.js";
@@ -14,7 +14,7 @@ import { PreviewManager } from "./preview.js";
 const SPEEDS = [0.75, 0.85, 1, 1.1, 1.2, 1.35, 1.5, 1.75, 2];
 
 export function readConfig() {
-  const c = vscode.workspace.getConfiguration("mdReader");
+  const c = vscode.workspace.getConfiguration("spokedown");
   return {
     model: c.get<string>("model", "kokoro"),
     voice: c.get<string>("voice", ""),
@@ -59,7 +59,7 @@ export class Controller implements vscode.Disposable {
     this.highlighter = new Highlighter(() => readConfig());
     this.previews = new PreviewManager(extensionUri, {
       click: (uri, offset) => void this.previewClick(uri, offset),
-      command: (name) => void vscode.commands.executeCommand(`mdReader.${name}`),
+      command: (name) => void vscode.commands.executeCommand(`spokedown.${name}`),
     });
     this.disposables.push(
       this.previews,
@@ -156,7 +156,7 @@ export class Controller implements vscode.Disposable {
     this.session = undefined;
     this.highlighter.clear();
     this.previews.clearAll(readConfig().speed);
-    void vscode.commands.executeCommand("setContext", "mdReader.active", false);
+    void vscode.commands.executeCommand("setContext", "spokedown.active", false);
     this.refreshIdleStatus();
   }
 
@@ -166,7 +166,7 @@ export class Controller implements vscode.Disposable {
 
   async changeSpeed(delta: number): Promise<void> {
     const s = Math.round(Math.max(0.5, Math.min(2, readConfig().speed + delta)) * 100) / 100;
-    await vscode.workspace.getConfiguration("mdReader").update("speed", s, vscode.ConfigurationTarget.Global);
+    await vscode.workspace.getConfiguration("spokedown").update("speed", s, vscode.ConfigurationTarget.Global);
   }
 
   async setSpeed(): Promise<void> {
@@ -175,7 +175,7 @@ export class Controller implements vscode.Disposable {
       SPEEDS.map((s) => ({ label: `${s}×`, description: s === cur ? "current" : s === 1 ? "normal" : undefined, s })),
       { title: "Reading speed" },
     );
-    if (pick) await vscode.workspace.getConfiguration("mdReader").update("speed", pick.s, vscode.ConfigurationTarget.Global);
+    if (pick) await vscode.workspace.getConfiguration("spokedown").update("speed", pick.s, vscode.ConfigurationTarget.Global);
   }
 
   async selectModel(): Promise<void> {
@@ -191,7 +191,7 @@ export class Controller implements vscode.Disposable {
     });
     const pick = await vscode.window.showQuickPick(items, { title: "Reading model", matchOnDetail: true });
     if (!pick || pick.id === cfg.model) return;
-    const conf = vscode.workspace.getConfiguration("mdReader");
+    const conf = vscode.workspace.getConfiguration("spokedown");
     await conf.update("model", pick.id, vscode.ConfigurationTarget.Global);
     await conf.update("voice", "", vscode.ConfigurationTarget.Global); // voices differ per model
   }
@@ -211,7 +211,7 @@ export class Controller implements vscode.Disposable {
           id: v.id,
         }));
       const pick = await vscode.window.showQuickPick(items, { title: `Voice (${backend.label})`, matchOnDescription: true });
-      if (pick) await vscode.workspace.getConfiguration("mdReader").update("voice", pick.id, vscode.ConfigurationTarget.Global);
+      if (pick) await vscode.workspace.getConfiguration("spokedown").update("voice", pick.id, vscode.ConfigurationTarget.Global);
     } catch (e) {
       this.showError(e);
     }
@@ -220,7 +220,7 @@ export class Controller implements vscode.Disposable {
   /** Warm up the model in the background (no UI, errors ignored until the user reads). */
   preload(): void {
     const cfg = readConfig();
-    if (!vscode.workspace.getConfiguration("mdReader").get<boolean>("preloadModel", true)) return;
+    if (!vscode.workspace.getConfiguration("spokedown").get<boolean>("preloadModel", true)) return;
     if (this.prepared.has(cfg.model)) return;
     void this.engine.prepare(cfg.model).then(
       () => this.prepared.add(cfg.model),
@@ -247,16 +247,16 @@ export class Controller implements vscode.Disposable {
 
   async clearCache(): Promise<void> {
     await this.engine.cache.clear();
-    void vscode.window.showInformationMessage("Markdown Reader: audio cache cleared.");
+    void vscode.window.showInformationMessage("Spokedown: audio cache cleared.");
   }
 
   /** Settings changed. */
   onConfigChanged(e: vscode.ConfigurationChangeEvent): void {
     const cfg = readConfig();
-    if (e.affectsConfiguration("mdReader.models")) this.engine.setModels(cfg.models);
-    if (e.affectsConfiguration("mdReader.audioOutput")) this.sinkKind = "";
-    if (["model", "voice", "speed", "models"].some((k) => e.affectsConfiguration(`mdReader.${k}`))) this.session?.invalidateUpcoming();
-    if (e.affectsConfiguration("mdReader.reading") && this.session && this.uri) void this.rebuild();
+    if (e.affectsConfiguration("spokedown.models")) this.engine.setModels(cfg.models);
+    if (e.affectsConfiguration("spokedown.audioOutput")) this.sinkKind = "";
+    if (["model", "voice", "speed", "models"].some((k) => e.affectsConfiguration(`spokedown.${k}`))) this.session?.invalidateUpcoming();
+    if (e.affectsConfiguration("spokedown.reading") && this.session && this.uri) void this.rebuild();
     if (this.last && this.script) this.status.update(this.last, this.script.segments, cfg.speed, this.modelLabel());
   }
 
@@ -272,7 +272,7 @@ export class Controller implements vscode.Disposable {
     const previewUri = this.previews.activeUri();
     if (previewUri) return { doc: await vscode.workspace.openTextDocument(previewUri) };
     if (ed && (ed.document.languageId === "markdown" || /\.(md|markdown|mdx)$/i.test(ed.document.fileName))) return { doc: ed.document, editor: ed };
-    void vscode.window.showInformationMessage("Markdown Reader: open a Markdown file first.");
+    void vscode.window.showInformationMessage("Spokedown: open a Markdown file first.");
     return undefined;
   }
 
@@ -294,7 +294,7 @@ export class Controller implements vscode.Disposable {
       this.sink = kind === "afplay" ? new AfplaySink(() => readConfig().latencyMs / 1000) : new SilentSink();
       this.sinkKind = kind;
       if (process.platform !== "darwin" && cfg.audioOutput === "afplay") {
-        void vscode.window.showWarningMessage("Markdown Reader: audio playback currently needs macOS (afplay). Running silently.");
+        void vscode.window.showWarningMessage("Spokedown: audio playback currently needs macOS (afplay). Running silently.");
       }
     }
     return this.sink;
@@ -303,7 +303,7 @@ export class Controller implements vscode.Disposable {
   private async ensureModel(modelId: string): Promise<void> {
     if (this.prepared.has(modelId)) return;
     const label = this.engine.models().find((m) => m.id === modelId)?.label ?? modelId;
-    await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: `Markdown Reader: loading ${label}` }, (p) =>
+    await vscode.window.withProgress({ location: vscode.ProgressLocation.Window, title: `Spokedown: loading ${label}` }, (p) =>
       this.engine.prepare(modelId, (e) => {
         if (e.status === "progress" && e.file && (e.total ?? 0) > 5_000_000) p.report({ message: `downloading ${path.basename(e.file)} ${Math.round(e.progress ?? 0)}%` });
       }),
@@ -316,7 +316,7 @@ export class Controller implements vscode.Disposable {
     try {
       const script = await buildSpeechScript(doc.getText(), this.readerOptions(doc));
       if (!script.segments.length) {
-        void vscode.window.showInformationMessage("Markdown Reader: nothing to read here.");
+        void vscode.window.showInformationMessage("Spokedown: nothing to read here.");
         return;
       }
       let sp: StartPoint;
@@ -331,10 +331,10 @@ export class Controller implements vscode.Disposable {
       this.pausedCursorLine = undefined;
       this.highlighter.setDocument(doc.uri);
       this.startSession(script, sp.index, Math.min(end, script.segments.length), sp.word);
-      if (vscode.workspace.getConfiguration("mdReader").get<boolean>("preview.openOnRead", false) && !this.previews.hasPreview(doc.uri)) {
+      if (vscode.workspace.getConfiguration("spokedown").get<boolean>("preview.openOnRead", false) && !this.previews.hasPreview(doc.uri)) {
         await this.previews.open(doc);
       }
-      void vscode.commands.executeCommand("setContext", "mdReader.active", true);
+      void vscode.commands.executeCommand("setContext", "spokedown.active", true);
     } catch (e) {
       this.showError(e);
     }
@@ -411,8 +411,8 @@ export class Controller implements vscode.Disposable {
     const msg = e instanceof Error ? e.message : String(e);
     if (/abort/i.test(msg)) return;
     const useSystem = "Use macOS voice";
-    void vscode.window.showErrorMessage(`Markdown Reader: ${msg}`, ...(readConfig().model !== "system" ? [useSystem] : [])).then(async (a) => {
-      if (a === useSystem) await vscode.workspace.getConfiguration("mdReader").update("model", "system", vscode.ConfigurationTarget.Global);
+    void vscode.window.showErrorMessage(`Spokedown: ${msg}`, ...(readConfig().model !== "system" ? [useSystem] : [])).then(async (a) => {
+      if (a === useSystem) await vscode.workspace.getConfiguration("spokedown").update("model", "system", vscode.ConfigurationTarget.Global);
     });
   }
 

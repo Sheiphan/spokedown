@@ -4,7 +4,7 @@ import { spawn, type ChildProcess } from "node:child_process";
 import fs from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
-import { encodeWav } from "@mdreader/engine";
+import { encodeWav } from "@spokedown/engine";
 import type { AudioSink } from "./session.js";
 
 export class AfplaySink implements AudioSink {
@@ -18,7 +18,7 @@ export class AfplaySink implements AudioSink {
   private dir: Promise<string>;
 
   constructor(private latencySec: () => number, private now: () => number = () => performance.now()) {
-    this.dir = fs.mkdtemp(path.join(os.tmpdir(), "mdreader-play-"));
+    this.dir = fs.mkdtemp(path.join(os.tmpdir(), "spokedown-play-"));
   }
 
   async play(pcm: Float32Array, sampleRate: number, startSec: number): Promise<"ended" | "interrupted"> {

@@ -3,14 +3,14 @@ import fsp from "node:fs/promises";
 import os from "node:os";
 import path from "node:path";
 import { describe, expect, it, vi } from "vitest";
-import { buildSpeechScript } from "@mdreader/core";
+import { buildSpeechScript } from "@spokedown/core";
 import {
   AudioCache, Engine, KokoroOnnxBackend, MacSayBackend, OpenAiCompatBackend,
   decodeWav, durationsToWordTimings, encodeWav, parseSayVoices,
   type ModelConfig, type SynthesisRequest, type SynthesisResult, type TtsBackend,
 } from "../src/index.js";
 
-const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "mdreader-test-"));
+const tmp = () => fs.mkdtempSync(path.join(os.tmpdir(), "spokedown-test-"));
 
 describe("durationsToWordTimings", () => {
   it("splits on spaces, skips pads, merges punctuation-only runs", () => {
@@ -216,7 +216,7 @@ describe("macOS say", () => {
 });
 
 // Real Kokoro run — only when the model is already downloaded (no network in tests).
-const modelsDir = path.join(os.homedir(), ".cache/mdreader/models");
+const modelsDir = path.join(os.homedir(), ".cache/spokedown/models");
 const haveKokoro = fs.existsSync(path.join(modelsDir, "onnx-community/Kokoro-82M-v1.0-ONNX-timestamped/onnx/model.onnx"));
 describe.runIf(haveKokoro)("Kokoro ONNX (integration)", () => {
   it("gives native word timings for every segment of a real paragraph", async () => {

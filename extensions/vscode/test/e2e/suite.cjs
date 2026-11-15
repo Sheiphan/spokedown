@@ -26,15 +26,15 @@ async function run() {
   const folder = vscode.workspace.workspaceFolders[0].uri.fsPath;
   const doc = await vscode.workspace.openTextDocument(path.join(folder, "kitchen-sink.md"));
   const editor = await vscode.window.showTextDocument(doc);
-  const ext = vscode.extensions.all.find((e) => e.packageJSON.name === "markdown-reader-tts");
+  const ext = vscode.extensions.all.find((e) => e.packageJSON.name === "spokedown");
   assert.ok(ext, "extension found");
   const api = await ext.activate();
   const text = doc.getText();
-  log("activated; model =", vscode.workspace.getConfiguration("mdReader").get("model"));
+  log("activated; model =", vscode.workspace.getConfiguration("spokedown").get("model"));
 
   // 1. Read from the start: first word highlighted (Kokoro must load inside VS Code's Electron)
   const t0 = Date.now();
-  await vscode.commands.executeCommand("mdReader.readFile");
+  await vscode.commands.executeCommand("spokedown.readFile");
   const first = await waitFor(api, (u) => u.state === "playing" && u.word >= 0, 120_000, "first word");
   log(`first word after ${Date.now() - t0} ms: "${first.segment.words[first.word].text}" quality=${first.quality}`);
   assert.equal(first.segment.text, "Kitchen sink for the reader.");
@@ -60,18 +60,18 @@ async function run() {
   assert.ok(seen.some((s) => s.spoken === "paragraph" && s.src === "paragraph"));
 
   // 3. Pause holds still; resume continues from the same word
-  await vscode.commands.executeCommand("mdReader.pause");
+  await vscode.commands.executeCommand("spokedown.pause");
   const paused = api.controller.session.snapshot();
   assert.equal(paused.state, "paused");
   const wordAtPause = api.controller.highlighter.state.word;
   await sleep(1200);
   assert.deepEqual(api.controller.highlighter.state.word, wordAtPause, "highlight frozen while paused");
-  await vscode.commands.executeCommand("mdReader.resume");
+  await vscode.commands.executeCommand("spokedown.resume");
   const resumed = await waitFor(api, (u) => u.state === "playing", 10_000, "resume");
   assert.equal(resumed.index, paused.index, "resumed on the same sentence");
 
   // 4. Jump to the next heading
-  await vscode.commands.executeCommand("mdReader.nextHeading");
+  await vscode.commands.executeCommand("spokedown.nextHeading");
   const h = await waitFor(api, (u) => u.state === "playing" && u.segment.kind === "heading", 30_000, "next heading");
   log("jumped to heading:", h.segment.text);
   assert.equal(h.segment.text, "Lists.");
@@ -85,35 +85,35 @@ async function run() {
   if (after.word) assert.match(newText.slice(...after.word), /\S/);
 
   // 5b. Pause, move the cursor elsewhere, press play → reads from the new line (not a resume)
-  await vscode.commands.executeCommand("mdReader.pause");
+  await vscode.commands.executeCommand("spokedown.pause");
   await waitFor(api, (u) => u.state === "paused", 5_000, "pause").catch(() => undefined);
   const taskLine = doc.getText().split("\n").findIndex((l) => l.startsWith("- [ ] open task"));
   editor.selection = new vscode.Selection(taskLine, 3, taskLine, 3);
-  await vscode.commands.executeCommand("mdReader.toggle");
+  await vscode.commands.executeCommand("spokedown.toggle");
   const moved = await waitFor(api, (u) => u.state === "playing" && u.word >= 0, 30_000, "start at moved cursor");
   log("after moving cursor while paused:", moved.segment.text);
   assert.equal(moved.segment.text, "to do, open task");
 
   // 5c. Same thing without moving the cursor → a real resume
-  await vscode.commands.executeCommand("mdReader.toggle");
+  await vscode.commands.executeCommand("spokedown.toggle");
   await sleep(200);
   assert.equal(api.controller.session.snapshot().state, "paused");
   const beforeResume = api.controller.session.snapshot().index;
-  await vscode.commands.executeCommand("mdReader.toggle");
+  await vscode.commands.executeCommand("spokedown.toggle");
   const res2 = await waitFor(api, (u) => u.state === "playing", 10_000, "resume in place");
   assert.equal(res2.index, beforeResume, "unmoved cursor resumes in place");
 
   // 6. Read from cursor on the table: the table intro is announced with a block highlight
   const tableLine = newText.split("\n").findIndex((l) => l.startsWith("| Name"));
   editor.selection = new vscode.Selection(tableLine, 0, tableLine, 0);
-  await vscode.commands.executeCommand("mdReader.readFromCursor");
+  await vscode.commands.executeCommand("spokedown.readFromCursor");
   const tbl = await waitFor(api, (u) => u.state === "playing" && u.segment.kind === "tableIntro", 30_000, "table intro");
   const block = api.controller.highlighter.state.block;
   assert.ok(newText.slice(...block).startsWith("| Name | Value | Note |"), "whole table highlighted");
   log("table:", tbl.segment.text);
 
   // 7. Stop clears everything
-  await vscode.commands.executeCommand("mdReader.stop");
+  await vscode.commands.executeCommand("spokedown.stop");
   assert.deepEqual(api.controller.highlighter.state, {});
 
   // 8. Read-along preview: renders, highlights the same word, click-to-read
@@ -133,11 +133,11 @@ async function run() {
       });
     });
   await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
-  await vscode.commands.executeCommand("mdReader.openPreview");
+  await vscode.commands.executeCommand("spokedown.openPreview");
   await sleep(2500); // webview boot + render + mermaid
   assert.ok(previews.hasPreview(doc.uri), "preview opened");
   await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
-  await vscode.commands.executeCommand("mdReader.readFile");
+  await vscode.commands.executeCommand("spokedown.readFile");
   const p1 = await waitPaint((p) => !!p.word, 60_000, "first word");
   log("preview painted:", JSON.stringify(p1));
   // the preview paints exactly the source text of the word being spoken
@@ -155,7 +155,7 @@ async function run() {
   const p2 = await paintedP;
   log("preview painted after click:", JSON.stringify(p2));
 
-  await vscode.commands.executeCommand("mdReader.stop");
+  await vscode.commands.executeCommand("spokedown.stop");
   await waitPaint((p) => p.word === null && p.sentence === null, 10_000, "cleared");
   log("all e2e checks passed");
 }

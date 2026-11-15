@@ -42,10 +42,10 @@ importers:
         specifier: ^4.1.5
         version: 4.1.5
     devDependencies:
-      '@mdreader/core':
+      '@spokedown/core':
         specifier: workspace:*
         version: link:../../packages/core
-      '@mdreader/engine':
+      '@spokedown/engine':
         specifier: workspace:*
         version: link:../../packages/engine
       '@types/hast':
@@ -124,7 +124,7 @@ importers:
       '@huggingface/transformers':
         specifier: 3.8.1
         version: 3.8.1
-      '@mdreader/core':
+      '@spokedown/core':
         specifier: workspace:*
         version: link:../core
       kokoro-js:

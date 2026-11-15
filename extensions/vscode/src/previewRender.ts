@@ -1,7 +1,7 @@
 // Markdown → preview HTML whose text and blocks carry source offsets (data-s / data-e),
 // so the read-along preview can highlight exactly what the speech script points at.
 // Uses the same parser as the speech script, so offsets agree. No vscode imports.
-import { displayMathTex, parseMarkdown } from "@mdreader/core";
+import { displayMathTex, parseMarkdown } from "@spokedown/core";
 import type { Element, ElementContent, Root as HastRoot, Text } from "hast";
 import type { Root as MdRoot } from "mdast";
 import rehypeHighlight from "rehype-highlight";

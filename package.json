@@ -1,5 +1,5 @@
 {
-  "name": "read-aloud-markdown",
+  "name": "spokedown",
   "private": true,
   "type": "module",
   "scripts": {
@@ -18,10 +18,10 @@
   "license": "MIT",
   "repository": {
     "type": "git",
-    "url": "https://github.com/Sheiphan/read-aloud-markdown.git"
+    "url": "https://github.com/Sheiphan/spokedown.git"
   },
-  "homepage": "https://github.com/Sheiphan/read-aloud-markdown#readme",
+  "homepage": "https://github.com/Sheiphan/spokedown#readme",
   "bugs": {
-    "url": "https://github.com/Sheiphan/read-aloud-markdown/issues"
+    "url": "https://github.com/Sheiphan/spokedown/issues"
   }
 }

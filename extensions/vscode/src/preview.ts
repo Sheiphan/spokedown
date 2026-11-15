@@ -9,7 +9,7 @@ import type { HighlightState } from "./highlighter.js";
 import { renderPreviewHtml } from "./previewRender.js";
 import type { PlayState } from "./session.js";
 
-export const PREVIEW_VIEW_TYPE = "mdReader.preview";
+export const PREVIEW_VIEW_TYPE = "spokedown.preview";
 
 export interface PreviewHandlers {
   /** A word was clicked at this source offset. */
