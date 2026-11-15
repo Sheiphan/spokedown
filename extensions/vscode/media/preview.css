@@ -1,0 +1,97 @@
+/* Read-along preview: highlights and controls on top of VS Code's markdown.css */
+
+::highlight(mdr-sentence) {
+  background-color: var(--vscode-mdReader-sentenceHighlightBackground, rgba(79, 163, 255, 0.11));
+}
+::highlight(mdr-word) {
+  background-color: var(--vscode-mdReader-wordHighlightBackground, rgba(230, 180, 34, 0.4));
+}
+::highlight(mdr-marker) {
+  text-decoration: underline 2px var(--vscode-focusBorder, #3794ff);
+  text-underline-offset: 3px;
+}
+
+.mdr-block {
+  background-color: var(--vscode-mdReader-blockHighlightBackground, rgba(255, 255, 255, 0.045));
+  box-shadow: 0 0 0 6px var(--vscode-mdReader-blockHighlightBackground, rgba(255, 255, 255, 0.045));
+  border-radius: 4px;
+  transition: background-color 120ms ease;
+}
+
+#content {
+  padding-bottom: 40vh; /* room to centre the last lines */
+  cursor: text;
+}
+#content .mdr-math .katex-display {
+  margin: 0.8em 0;
+}
+pre.mermaid {
+  background: transparent;
+  text-align: center;
+}
+
+#toolbar {
+  position: fixed;
+  top: 8px;
+  right: 12px;
+  z-index: 10;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px 4px;
+  border-radius: 6px;
+  background: var(--vscode-editorWidget-background, #252526);
+  border: 1px solid var(--vscode-editorWidget-border, transparent);
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.3));
+  opacity: 0.55;
+  transition: opacity 120ms ease;
+}
+#toolbar:hover {
+  opacity: 1;
+}
+#toolbar button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  min-width: 26px;
+  height: 24px;
+  padding: 0 5px;
+  border: none;
+  border-radius: 4px;
+  background: transparent;
+  color: var(--vscode-foreground);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+}
+#toolbar button:hover {
+  background: var(--vscode-toolbar-hoverBackground, rgba(90, 93, 94, 0.31));
+}
+#state {
+  font-size: 11px;
+  opacity: 0.8;
+  padding: 0 4px;
+}
+#state:empty {
+  display: none;
+}
+
+#back {
+  position: fixed;
+  bottom: 16px;
+  left: 50%;
+  transform: translateX(-50%);
+  z-index: 10;
+  padding: 5px 12px;
+  border: none;
+  border-radius: 14px;
+  background: var(--vscode-button-background, #0e639c);
+  color: var(--vscode-button-foreground, #fff);
+  font: inherit;
+  font-size: 12px;
+  cursor: pointer;
+  box-shadow: 0 2px 8px var(--vscode-widget-shadow, rgba(0, 0, 0, 0.3));
+}
+#back[hidden] {
+  display: none;
+}

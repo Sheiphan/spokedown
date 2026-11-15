@@ -1,0 +1,10 @@
+export * from "./types.js";
+export { DEFAULT_OPTIONS, resolveOptions, type ReaderOptions, type ReaderOptionsInput } from "./options.js";
+export { parseMarkdown, displayMathTex, normalizeDisplayMath } from "./parse.js";
+export { buildSpeechScript, segmentAtOffset } from "./speechScript.js";
+export { alignWordTimings, alignByLength, estimateTimings, wordIndexAt, type WordTiming, type TimingQuality } from "./align.js";
+export { normalizeToken, normalizeText, splitIdentifier } from "./normalize.js";
+export { numberToWords } from "./numbers.js";
+export { codeToSpeech, describeCodeBlock, isDataBlock } from "./rules/code.js";
+export { describeMermaid, countFlowchartNodes } from "./rules/mermaid.js";
+export { initMath, texToWords, preprocessTex, postprocessSpeech } from "./rules/math.js";

@@ -1,0 +1,37 @@
+{
+  "name": "@mdreader/engine",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "speak": "tsx scripts/speak.ts"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1",
+    "@mdreader/core": "workspace:*",
+    "kokoro-js": "1.2.1"
+  },
+  "description": "Local TTS backends (Kokoro ONNX, OpenAI-compatible, macOS say) with word timings and caching.",
+  "author": "Sheiphan Shaijan Joseph",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sheiphan/read-aloud-markdown.git",
+    "directory": "packages/engine"
+  },
+  "homepage": "https://github.com/Sheiphan/read-aloud-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/Sheiphan/read-aloud-markdown/issues"
+  }
+}

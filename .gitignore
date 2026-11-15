@@ -1,0 +1,10 @@
+node_modules/
+dist/
+**/out/
+*.wav
+*.vsix
+.cache/
+.vscode-test/
+spike/
+.DS_Store
+*.tsbuildinfo

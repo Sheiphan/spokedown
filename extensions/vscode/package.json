@@ -1,0 +1,488 @@
+{
+  "name": "markdown-reader-tts",
+  "displayName": "Markdown Reader (TTS)",
+  "description": "Reads Markdown aloud with natural local voices and highlights each word in the editor.",
+  "version": "0.1.0",
+  "publisher": "local",
+  "private": true,
+  "license": "MIT",
+  "engines": {
+    "vscode": "^1.100.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "main": "./dist/extension.cjs",
+  "activationEvents": [
+    "onLanguage:markdown"
+  ],
+  "contributes": {
+    "commands": [
+      {
+        "command": "mdReader.toggle",
+        "title": "Play / Pause",
+        "category": "Markdown Reader",
+        "icon": "$(play)"
+      },
+      {
+        "command": "mdReader.readFromCursor",
+        "title": "Read from Cursor",
+        "category": "Markdown Reader",
+        "icon": "$(play)"
+      },
+      {
+        "command": "mdReader.readFile",
+        "title": "Read File from Start",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.readSelection",
+        "title": "Read Selection",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.pause",
+        "title": "Pause",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.resume",
+        "title": "Resume",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.stop",
+        "title": "Stop",
+        "category": "Markdown Reader",
+        "icon": "$(debug-stop)"
+      },
+      {
+        "command": "mdReader.nextSentence",
+        "title": "Next Sentence",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.previousSentence",
+        "title": "Previous Sentence",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.nextHeading",
+        "title": "Next Heading",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.previousHeading",
+        "title": "Previous Heading",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.skipBlock",
+        "title": "Skip Block (table, code, list)",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.faster",
+        "title": "Faster",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.slower",
+        "title": "Slower",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.setSpeed",
+        "title": "Set Speed…",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.selectVoice",
+        "title": "Select Voice…",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.selectModel",
+        "title": "Select Model…",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.followReading",
+        "title": "Back to Reading Position",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.showScript",
+        "title": "Show Spoken Script",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.clearCache",
+        "title": "Clear Audio Cache",
+        "category": "Markdown Reader"
+      },
+      {
+        "command": "mdReader.openPreview",
+        "title": "Open Read-Along Preview",
+        "category": "Markdown Reader",
+        "icon": "$(book)"
+      }
+    ],
+    "menus": {
+      "editor/title": [
+        {
+          "command": "mdReader.openPreview",
+          "when": "editorLangId == markdown",
+          "group": "navigation@89"
+        },
+        {
+          "command": "mdReader.readFromCursor",
+          "when": "editorLangId == markdown && !mdReader.active",
+          "group": "navigation@90"
+        },
+        {
+          "command": "mdReader.stop",
+          "when": "editorLangId == markdown && mdReader.active",
+          "group": "navigation@90"
+        }
+      ],
+      "editor/context": [
+        {
+          "command": "mdReader.readFromCursor",
+          "when": "editorLangId == markdown",
+          "group": "mdReader@1"
+        },
+        {
+          "command": "mdReader.readSelection",
+          "when": "editorLangId == markdown && editorHasSelection",
+          "group": "mdReader@2"
+        }
+      ]
+    },
+    "keybindings": [
+      {
+        "command": "mdReader.toggle",
+        "key": "ctrl+alt+r",
+        "when": "editorLangId == markdown || mdReader.active || activeWebviewPanelId == 'mdReader.preview'"
+      },
+      {
+        "command": "mdReader.stop",
+        "key": "ctrl+alt+s",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.nextSentence",
+        "key": "ctrl+alt+right",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.previousSentence",
+        "key": "ctrl+alt+left",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.nextHeading",
+        "key": "ctrl+alt+down",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.previousHeading",
+        "key": "ctrl+alt+up",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.skipBlock",
+        "key": "ctrl+alt+j",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.faster",
+        "key": "ctrl+alt+=",
+        "when": "mdReader.active"
+      },
+      {
+        "command": "mdReader.slower",
+        "key": "ctrl+alt+-",
+        "when": "mdReader.active"
+      }
+    ],
+    "colors": [
+      {
+        "id": "mdReader.wordHighlightBackground",
+        "description": "Background of the word being spoken.",
+        "defaults": {
+          "dark": "#e6b42266",
+          "light": "#f5c40066",
+          "highContrast": "#e6b42299"
+        }
+      },
+      {
+        "id": "mdReader.sentenceHighlightBackground",
+        "description": "Background of the sentence being spoken.",
+        "defaults": {
+          "dark": "#4fa3ff1c",
+          "light": "#3478f61a",
+          "highContrast": "#4fa3ff33"
+        }
+      },
+      {
+        "id": "mdReader.blockHighlightBackground",
+        "description": "Whole-line background of the block (table, code, diagram, equation) being described.",
+        "defaults": {
+          "dark": "#ffffff0b",
+          "light": "#0000000a",
+          "highContrast": "#ffffff1a"
+        }
+      }
+    ],
+    "configuration": {
+      "title": "Markdown Reader",
+      "properties": {
+        "mdReader.model": {
+          "type": "string",
+          "default": "kokoro",
+          "markdownDescription": "Model to read with: `kokoro` (natural, exact word highlighting), `kokoro-compact` (smaller download), `system` (macOS voices), or the `id` of an entry in `#mdReader.models#`."
+        },
+        "mdReader.voice": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Voice id (e.g. `af_heart`, `bf_emma`, `am_michael`). Empty = the model's default. Use **Markdown Reader: Select Voice…**."
+        },
+        "mdReader.speed": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0.5,
+          "maximum": 2,
+          "description": "Speaking rate (0.5–2). Changes apply from the next sentence."
+        },
+        "mdReader.models": {
+          "type": "array",
+          "default": [],
+          "markdownDescription": "Extra models. Examples:\n\n```json\n{ \"id\": \"mlx\", \"type\": \"openai\", \"baseUrl\": \"http://localhost:8000\", \"model\": \"mlx-community/Kokoro-82M-bf16\" }\n{ \"id\": \"kokoro-fp16\", \"type\": \"kokoro-onnx\", \"modelId\": \"onnx-community/Kokoro-82M-v1.0-ONNX-timestamped\", \"dtype\": \"fp16\" }\n```",
+          "items": {
+            "type": "object",
+            "required": [
+              "id",
+              "type"
+            ],
+            "properties": {
+              "id": {
+                "type": "string"
+              },
+              "type": {
+                "type": "string",
+                "enum": [
+                  "kokoro-onnx",
+                  "openai",
+                  "say"
+                ]
+              },
+              "label": {
+                "type": "string"
+              },
+              "modelId": {
+                "type": "string"
+              },
+              "dtype": {
+                "type": "string",
+                "enum": [
+                  "fp32",
+                  "fp16",
+                  "q8",
+                  "q4",
+                  "q4f16"
+                ]
+              },
+              "baseUrl": {
+                "type": "string"
+              },
+              "model": {
+                "type": "string"
+              },
+              "apiKey": {
+                "type": "string"
+              },
+              "voices": {
+                "type": "array",
+                "items": {
+                  "type": "string"
+                }
+              },
+              "defaultVoice": {
+                "type": "string"
+              }
+            }
+          }
+        },
+        "mdReader.dataDirectory": {
+          "type": "string",
+          "default": "",
+          "markdownDescription": "Where models and the audio cache live. Empty = `~/.cache/mdreader` (shared with the command-line tools)."
+        },
+        "mdReader.cacheSizeMB": {
+          "type": "number",
+          "default": 512,
+          "minimum": 16,
+          "description": "Maximum size of the on-disk audio cache."
+        },
+        "mdReader.prefetch": {
+          "type": "number",
+          "default": 3,
+          "minimum": 1,
+          "maximum": 10,
+          "description": "Sentences synthesized ahead of playback."
+        },
+        "mdReader.preloadModel": {
+          "type": "boolean",
+          "default": true,
+          "description": "Load the voice model in the background when a Markdown file is opened, so reading starts immediately (uses ~400 MB of memory for Kokoro)."
+        },
+        "mdReader.highlight.words": {
+          "type": "boolean",
+          "default": true,
+          "description": "Highlight the word being spoken (sentence and block highlights are always shown)."
+        },
+        "mdReader.highlight.leadMs": {
+          "type": "number",
+          "default": 60,
+          "description": "Move the word highlight this many ms ahead of the audio so it feels in sync."
+        },
+        "mdReader.audioOutput": {
+          "type": "string",
+          "enum": [
+            "afplay",
+            "silent"
+          ],
+          "default": "afplay",
+          "markdownDescription": "`afplay`: play through macOS. `silent`: run the reading clock without sound (for testing highlighting)."
+        },
+        "mdReader.audioLatencyMs": {
+          "type": "number",
+          "default": 90,
+          "description": "Delay between starting playback and hearing sound; highlighting compensates for it."
+        },
+        "mdReader.autoScroll": {
+          "type": "boolean",
+          "default": true,
+          "description": "Keep the reading position in view. Scrolling away pauses following until you return."
+        },
+        "mdReader.preview.openOnRead": {
+          "type": "boolean",
+          "default": false,
+          "description": "Open the read-along preview beside the editor whenever reading starts."
+        },
+        "mdReader.reading.code": {
+          "type": "string",
+          "enum": [
+            "announce",
+            "read",
+            "skip"
+          ],
+          "default": "announce",
+          "markdownDescription": "Code blocks: `announce` (\"Python code block, 12 lines\"), `read` line by line, or `skip`."
+        },
+        "mdReader.reading.codeMaxLines": {
+          "type": "number",
+          "default": 20,
+          "description": "When reading code, stop after this many lines."
+        },
+        "mdReader.reading.tables": {
+          "type": "string",
+          "enum": [
+            "rows",
+            "announce",
+            "skip"
+          ],
+          "default": "rows",
+          "markdownDescription": "Tables: announce then read each `rows` with column labels, only `announce`, or `skip`."
+        },
+        "mdReader.reading.mathDisplay": {
+          "type": "string",
+          "enum": [
+            "short",
+            "full",
+            "announce"
+          ],
+          "default": "short",
+          "markdownDescription": "Display equations: `short` reads them unless long, `full` always reads, `announce` just says \"Equation\"."
+        },
+        "mdReader.reading.mermaid": {
+          "type": "string",
+          "enum": [
+            "announce",
+            "skip"
+          ],
+          "default": "announce",
+          "description": "Mermaid diagrams."
+        },
+        "mdReader.reading.dataBlocks": {
+          "type": "string",
+          "enum": [
+            "announce",
+            "skip"
+          ],
+          "default": "announce",
+          "description": "Unlabelled code fences that only contain numbers (traces, arrays)."
+        },
+        "mdReader.reading.frontmatter": {
+          "type": "string",
+          "enum": [
+            "skip",
+            "announce"
+          ],
+          "default": "skip",
+          "description": "YAML frontmatter (SKILL.md frontmatter is always announced)."
+        },
+        "mdReader.reading.numberDigits": {
+          "type": "number",
+          "default": 4,
+          "minimum": 1,
+          "maximum": 12,
+          "description": "Decimals with more significant digits are rounded and read as \"about …\"."
+        }
+      }
+    }
+  },
+  "scripts": {
+    "build": "node build.mjs",
+    "watch": "node build.mjs --watch",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "test:e2e": "node build.mjs && node test/e2e/run.mjs"
+  },
+  "dependencies": {
+    "@huggingface/transformers": "3.8.1",
+    "kokoro-js": "1.2.1",
+    "mathjax-full": "^3.2.2",
+    "speech-rule-engine": "^4.1.5",
+    "katex": "0.19.1",
+    "mermaid": "12.3.0"
+  },
+  "devDependencies": {
+    "@mdreader/core": "workspace:*",
+    "@mdreader/engine": "workspace:*",
+    "@types/vscode": "1.100.0",
+    "@vscode/test-electron": "^3.1.0",
+    "esbuild": "0.28.2",
+    "remark-rehype": "11.1.2",
+    "rehype-katex": "7.0.1",
+    "rehype-stringify": "10.0.1",
+    "rehype-raw": "7.0.0",
+    "rehype-highlight": "7.0.2",
+    "unist-util-visit": "^5.0.0",
+    "@types/hast": "^3.0.4",
+    "@types/mdast": "^4.0.4",
+    "jsdom": "^26.1.0",
+    "@types/jsdom": "^21.1.7",
+    "unified": "^11.0.5"
+  },
+  "author": "Sheiphan Shaijan Joseph",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sheiphan/read-aloud-markdown.git"
+  },
+  "homepage": "https://github.com/Sheiphan/read-aloud-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/Sheiphan/read-aloud-markdown/issues"
+  }
+}

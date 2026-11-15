@@ -1,0 +1,44 @@
+{
+  "name": "@mdreader/core",
+  "version": "0.1.0",
+  "private": true,
+  "type": "module",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "exports": {
+    ".": {
+      "types": "./dist/index.d.ts",
+      "default": "./dist/index.js"
+    }
+  },
+  "scripts": {
+    "build": "tsc -p tsconfig.json",
+    "typecheck": "tsc -p tsconfig.json --noEmit",
+    "test": "vitest run",
+    "dump": "tsx scripts/dump-script.ts"
+  },
+  "dependencies": {
+    "mathjax-full": "^3.2.2",
+    "remark-frontmatter": "^5.0.0",
+    "remark-gfm": "^4.0.1",
+    "remark-math": "^6.0.0",
+    "remark-parse": "^11.0.0",
+    "speech-rule-engine": "^4.1.5",
+    "unified": "^11.0.5"
+  },
+  "devDependencies": {
+    "@types/mdast": "^4.0.4"
+  },
+  "description": "Markdown to speech script with source-mapped words.",
+  "author": "Sheiphan Shaijan Joseph",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sheiphan/read-aloud-markdown.git",
+    "directory": "packages/core"
+  },
+  "homepage": "https://github.com/Sheiphan/read-aloud-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/Sheiphan/read-aloud-markdown/issues"
+  }
+}

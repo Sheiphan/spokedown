@@ -1,0 +1,27 @@
+{
+  "name": "read-aloud-markdown",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "build": "pnpm -r build",
+    "test": "pnpm -r test",
+    "typecheck": "pnpm -r typecheck"
+  },
+  "devDependencies": {
+    "typescript": "^5.9.3",
+    "vitest": "^4.0.0",
+    "tsx": "^4.20.0",
+    "@types/node": "^24.0.0"
+  },
+  "description": "Read Markdown aloud with local neural voices and word-level highlighting in VS Code.",
+  "author": "Sheiphan Shaijan Joseph",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Sheiphan/read-aloud-markdown.git"
+  },
+  "homepage": "https://github.com/Sheiphan/read-aloud-markdown#readme",
+  "bugs": {
+    "url": "https://github.com/Sheiphan/read-aloud-markdown/issues"
+  }
+}

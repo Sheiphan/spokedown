@@ -1,0 +1,61 @@
+L1 heading: zero zero one, Softmax and scaled dot-product attention, by hand.
+L3 paragraph: Companion to: attention dot M D, Code: attention dot P Y, Every number here is reproduced by: check softmax dot P Y, uv run python check softmax dot P Y,
+L10 heading: How to read this.
+L12 paragraph: This walkthrough pushes one tiny input through every line of an attention head, a query, a set of keys, and their values, and does the arithmetic on paper, then checks each result against the code.
+L14 paragraph: You do not need a linear-algebra background: every term, vector, dot product, norm, softmax, Cauchy-Schwarz, is defined at first use.
+L18 paragraph: We
+L20 listItem: one, fix one tiny input, section one,
+L21 listItem: two, walk every operation of Attention dot forward, attention dot P Y, line forty-two, with causal equals True, section two,
+L23 listItem: three, then check the bound on the scores, section three.
+L27 heading: Part zero, What are we computing.
+L29 paragraph: A single attention head computes, Vaswani et al. twenty seventeen,
+L31 math: the Attention of Q, K, V, equals softmax of Q K transpose over the square root of d sub k plus M, times V.
+L33 paragraph: where Q, K, V hold one row per token, Q K transpose is the all-pairs similarity score, and M is the causal mask.
+L34 paragraph: The number q sub i times k sub j is called an attention score.
+L37 diagram »: Diagram: flowchart with six steps.
+L50 paragraph: The final output, computed by hand in section two:
+L52 data »: Data block, three lines.
+L60 heading: Part one, The running example.
+L62 heading: one point one Terms we need.
+L64 listItem: Vector: an ordered list of numbers, for example three, zero, four, zero.
+L64 listItem: Its length is how many numbers it holds, here four.
+L66 listItem: Dot product: multiply component by component and add.
+L67 listItem: three, zero, four, zero, times one, one, one, one, equals three plus zero plus four plus zero equals seven.
+L68 listItem: Norm, written the norm of a, the square root of a times a, the length of the arrow.
+L69 listItem: the norm of three, zero, four, zero, equals the square root of nine plus sixteen equals five.
+L70 listItem: Transpose A transpose, flip rows both ways columns.
+L71 listItem: Mean of n numbers: their sum divided by n.
+L73 heading: one point two The configuration.
+L75 tableIntro »: Table, three columns: Symbol, Meaning, Value, four rows.
+L77 tableRow: Row one: Symbol: seq len, S, Meaning: tokens in the sequence, Value: three.
+L78 tableRow: Row two: Symbol: head dim, d sub k, Meaning: width of one head, Value: four.
+L79 tableRow: Row three: Symbol: causal, Meaning: mask future tokens, Value: True.
+L80 tableRow: Row four: Symbol: scale, Meaning: divide scores by, Value: the square root of d sub k equals two.
+L82 heading: one point three The input.
+L84 paragraph: Each token embedding is a one-hot vector, so the matrix is
+L86 math: X equals a three by one matrix equals a three by four matrix.
+L93 paragraph: This makes each projected q sub i exactly the i-th column of W sub Q, and the output projection is the identity: ones on the diagonal.
+L98 heading: Part two, The forward pass.
+L100 heading: Step one, Project.
+L102 paragraph: Code, attention dot P Y, lines fifty to fifty-two,
+L104 code »: Python code block, three lines.
+L110 paragraph: Every vector here is length-four.
+L110 paragraph: We write q sub one superscript zero for head zero, token one.
+L112 heading: Step two, Scores and the mask.
+L114 paragraph: Scores are q sub i times k sub j divided by the square root of d sub k, then the mask sends future tokens to negative infinity,
+L117 math: M equals a three by three matrix.
+L119 heading: Step three, Softmax.
+L121 math: p sub j equals softmax of z, sub j equals e raised to the z sub j power over the sum from l equals one to S of e raised to the z sub l power.
+L123 paragraph: Row one: zero, one, negative infinity to e to the zero power equals one, e to the first power equals about two point seven one eight, sum equals about three point seven one eight, so p equals about zero point two six eight nine, about zero point seven three one one, zero.
+L126 quote: Why subtract the max?
+L126 quote: Softmax is shift-invariant, so implementations subtract max over l of z sub l first and nothing overflows.
+L127 quote: The result is the same to three times ten to the negative eight power.
+L130 heading: Step four, Weighted sum.
+L132 math: final result, output almost equals a two by four matrix.
+L139 heading: Part three, The bound.
+L141 paragraph: For any two vectors, the absolute value of a times b is less than or equal to the norm of a times the norm of b, so a score is at most d sub k when both norms are the square root of d sub k, about two point zero after scaling, approximately the ceiling we measured.
+L145 tableIntro »: Table, three columns: step, operation, shape, three rows.
+L147 tableRow: Row one: step: one, operation: project, shape: shape one, three, four.
+L148 tableRow: Row two: step: two, operation: scores plus mask, shape: shape one, three, three.
+L149 tableRow: Row three: step: three, operation: softmax, shape: shape one, three, three.
+L151 paragraph: See section one point two for the configuration and H bmod H K V style checks in config dot P Y, lines ten to fourteen.
