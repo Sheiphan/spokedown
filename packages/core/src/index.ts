@@ -8,3 +8,4 @@ export { numberToWords } from "./numbers.js";
 export { codeToSpeech, describeCodeBlock, isDataBlock } from "./rules/code.js";
 export { describeMermaid, countFlowchartNodes } from "./rules/mermaid.js";
 export { initMath, texToWords, preprocessTex, postprocessSpeech } from "./rules/math.js";
+export { compilePronunciations, applyPronunciations, type PronunciationMap } from "./pronunciation.js";

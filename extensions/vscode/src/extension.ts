@@ -37,6 +37,8 @@ export function activate(context: vscode.ExtensionContext): SpokedownApi {
   cmd("slower", () => controller.changeSpeed(-0.1));
   cmd("setSpeed", () => controller.setSpeed());
   cmd("selectVoice", () => controller.selectVoice());
+  cmd("addPronunciation", () => controller.addPronunciation());
+  cmd("editPronunciations", () => vscode.commands.executeCommand("workbench.action.openSettings", "spokedown.pronunciations"));
   cmd("selectModel", () => controller.selectModel());
   cmd("followReading", () => controller.follow());
   cmd("showScript", () => controller.showScript());

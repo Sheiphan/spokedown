@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.3.0
+
+- **Pronunciation dictionary** (`spokedown.pronunciations`, and **Spokedown: Fix Pronunciation…** on the word under the cursor). Respell names and acronyms such as `kubectl` → "kube control". Keys can be words, phrases or parts of identifiers; an empty value silences a word. Highlighting still follows the original text.
+
 ## 0.2.0
 
 - **Windows and Linux support** (x64 and arm64), in addition to macOS. Sound plays through the OS's own player: PowerShell's SoundPlayer on Windows, and `paplay`, `pw-play`, `aplay`, `ffplay`, `play` or `mpv` on Linux.

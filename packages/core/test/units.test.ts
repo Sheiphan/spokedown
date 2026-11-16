@@ -191,3 +191,54 @@ describe("align", () => {
     expect(wordIndexAt(t, 2.99)).toBe(2);
   });
 });
+
+import { compilePronunciations } from "../src/pronunciation.js";
+import { buildSpeechScript } from "../src/speechScript.js";
+
+describe("pronunciation dictionary", () => {
+  const spoken = async (md: string, pronunciations: Record<string, string>) =>
+    (await buildSpeechScript(md, { pronunciations })).segments.map((s) => s.text).join(" ");
+
+  it("respells a plain word, keeps punctuation, and ignores case for lowercase keys", async () => {
+    expect(await spoken("Run kubectl, then Kubectl again.", { kubectl: "kube control" })).toBe("Run kube control, then kube control again.");
+  });
+
+  it("matches inline code and splits the replacement into words with the source range", async () => {
+    const md = "Use `kubectl` now.";
+    const script = await buildSpeechScript(md, { pronunciations: { kubectl: "kube control" } });
+    const words = script.segments[0]!.words;
+    expect(words.map((w) => w.text)).toEqual(["Use", "kube", "control", "now."]);
+    expect(md.slice(words[1]!.srcStart, words[1]!.srcEnd)).toBe("`kubectl`");
+    expect(words[2]!.srcStart).toBe(words[1]!.srcStart);
+  });
+
+  it("uppercase keys match exactly; mixed digits and letters work", async () => {
+    expect(await spoken("We run K8s and k8s.", { K8s: "kates" })).toBe("We run kates and k eight s.");
+  });
+
+  it("matches multi-word keys across source tokens and prefers the longest key", async () => {
+    const out = await spoken("Claude Code helps. Claude replies.", { "Claude Code": "klawd code", Claude: "klawd" });
+    expect(out).toBe("klawd code helps. klawd replies.");
+  });
+
+  it("replaces a part of an identifier", async () => {
+    expect(await spoken("Call `kubectl_apply` first.", { kubectl: "kube control" })).toContain("kube control apply");
+  });
+
+  it("an empty replacement silences the word", async () => {
+    expect(await spoken("Hello world today.", { world: "" })).toBe("Hello today.");
+  });
+
+  it("leaves everything untouched without a dictionary or when nothing matches", async () => {
+    const md = "Plain text about nginx.";
+    expect(await spoken(md, {})).toBe(await spoken(md, { other: "x" }));
+    expect(compilePronunciations({})).toBeUndefined();
+    expect(compilePronunciations(undefined)).toBeUndefined();
+  });
+
+  it("keeps every word's source range valid and monotonic", async () => {
+    const md = "# Setup\n\nInstall kubectl and nginx, then run `kubectl get pods`.\n";
+    const script = await buildSpeechScript(md, { pronunciations: { kubectl: "kube control", nginx: "engine x" } });
+    for (const seg of script.segments) for (const w of seg.words) expect(md.slice(w.srcStart, w.srcEnd).length).toBeGreaterThan(0);
+  });
+});

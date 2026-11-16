@@ -4,6 +4,7 @@ import type {
 } from "mdast";
 import { displayMathTex, parseMarkdown } from "./parse.js";
 import { normalizeToken } from "./normalize.js";
+import { applyPronunciations, compilePronunciations, type CompiledPronunciations } from "./pronunciation.js";
 import { numberToWords } from "./numbers.js";
 import { resolveOptions, type ReaderOptions, type ReaderOptionsInput } from "./options.js";
 import { codeToSpeech, describeCodeBlock } from "./rules/code.js";
@@ -71,11 +72,16 @@ class Builder {
   private pendingPause = 0;
   private skipUntil = -1;
 
-  constructor(private src: string, private opts: ReaderOptions) {}
+  private pron: CompiledPronunciations | undefined;
+
+  constructor(private src: string, private opts: ReaderOptions) {
+    this.pron = compilePronunciations(opts.pronunciations);
+  }
 
   // ---------- emitting ----------
 
   private emit(kind: SegmentKind, mode: Segment["mode"], ws: Word[], blockRange: Range, pauseBefore: number, pauseAfter: number): void {
+    if (this.pron) ws = applyPronunciations(ws, this.src, this.pron);
     if (!ws.length) return;
     const sentences: Word[][] = [];
     let cur: Word[] = [];

@@ -36,6 +36,7 @@ Everything runs on your machine. No account, no API key, no telemetry.
 
 - **Starts where you are** — from the cursor's line (mid-sentence if needed); pause, move the cursor, press play, and it continues from the new spot.
 - **Controls** — play/pause, next/previous sentence, next/previous heading, skip a whole table or code block, speed 0.5–2×, voice and model pickers.
+- **Pronunciation dictionary** — fix how names and acronyms are spoken, in one click from the editor.
 - **Pluggable models** — Kokoro (default), Kokoro compact, macOS system voices, or any OpenAI-compatible speech server (e.g. [mlx-audio](https://github.com/Blaizzy/mlx-audio) for Qwen3-TTS and others, Kokoro-FastAPI).
 - **Fast re-reads** — synthesized audio is cached on disk; a few sentences are generated ahead of playback.
 
@@ -95,6 +96,27 @@ equations / diagrams / frontmatter, number precision, highlight timing
   { "id": "kokoro-fp16", "type": "kokoro-onnx", "modelId": "onnx-community/Kokoro-82M-v1.0-ONNX-timestamped", "dtype": "fp16" }
 ]
 ```
+
+## Pronunciation dictionary
+
+Technical docs are full of names a voice gets wrong. Put the cursor on a word and run
+**Spokedown: Fix Pronunciation…** (also in the editor's right-click menu), type how it should
+sound ("kube control"), and it is saved for every file. Or edit the setting directly:
+
+```json
+"spokedown.pronunciations": {
+  "kubectl": "kube control",
+  "nginx": "engine x",
+  "K8s": "kates",
+  "Claude Code": "klawd code"
+}
+```
+
+- Lowercase keys ignore case (`kubectl` also matches `Kubectl` and `` `kubectl` ``); keys with a capital match exactly.
+- A key with spaces matches a phrase; the longest key wins.
+- A key also matches part of an identifier: `kubectl` in `kubectl_apply` → "kube control apply".
+- An empty value silences the word.
+- Highlighting still follows the original text. Changes apply immediately, even mid-reading.
 
 ## Audio on each OS
 

@@ -161,6 +161,16 @@ async function run() {
 
   await vscode.commands.executeCommand("spokedown.stop");
   await waitPaint((p) => p.word === null && p.sentence === null, 10_000, "cleared");
+  // The pronunciation dictionary changes what is spoken (checked through the spoken-script view).
+  const conf = vscode.workspace.getConfiguration("spokedown");
+  await conf.update("pronunciations", { sink: "sync", "kitchen sink": "galley sync" }, vscode.ConfigurationTarget.Workspace);
+  await vscode.window.showTextDocument(doc, vscode.ViewColumn.One);
+  await vscode.commands.executeCommand("spokedown.showScript");
+  const spokenText = vscode.window.activeTextEditor.document.getText();
+  await conf.update("pronunciations", undefined, vscode.ConfigurationTarget.Workspace);
+  assert.match(spokenText, /galley sync for the reader\./, "the phrase key replaced \"Kitchen sink\"");
+  assert.doesNotMatch(spokenText, /Kitchen sink for/, "the original wording is gone");
+  log("pronunciation dictionary applied:", spokenText.split("\n").find((l) => /galley sync/.test(l)));
   log("all e2e checks passed");
 }
 

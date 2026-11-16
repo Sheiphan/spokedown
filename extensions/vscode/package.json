@@ -2,7 +2,7 @@
   "name": "spokedown",
   "displayName": "Spokedown: Markdown Read Aloud, Word by Word",
   "description": "Read Markdown aloud with a natural local voice that highlights every word. Understands math, tables, code and diagrams. Built for technical and coding-agent docs. macOS, Windows and Linux.",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "publisher": "SheiphanJoseph",
   "private": true,
   "license": "GPL-3.0-only",
@@ -103,6 +103,16 @@
         "category": "Spokedown"
       },
       {
+        "command": "spokedown.addPronunciation",
+        "title": "Fix Pronunciation…",
+        "category": "Spokedown"
+      },
+      {
+        "command": "spokedown.editPronunciations",
+        "title": "Edit Pronunciation Dictionary",
+        "category": "Spokedown"
+      },
+      {
         "command": "spokedown.selectModel",
         "title": "Select Model…",
         "category": "Spokedown"
@@ -157,6 +167,11 @@
           "command": "spokedown.readSelection",
           "when": "editorLangId == markdown && editorHasSelection",
           "group": "spokedown@2"
+        },
+        {
+          "command": "spokedown.addPronunciation",
+          "when": "editorLangId == markdown",
+          "group": "spokedown@3"
         }
       ]
     },
@@ -446,6 +461,14 @@
           "minimum": 1,
           "maximum": 12,
           "description": "Decimals with more significant digits are rounded and read as \"about …\"."
+        },
+        "spokedown.pronunciations": {
+          "type": "object",
+          "default": {},
+          "additionalProperties": {
+            "type": "string"
+          },
+          "markdownDescription": "Respell words so the voice says them right. Keys are matched against the Markdown source: plain lowercase keys ignore case (`kubectl` also matches `Kubectl` and `` `kubectl` ``), keys with capitals match exactly (`K8s`), and a key with spaces matches a phrase (`Claude Code`). A key also matches a part of an identifier (`kubectl` in `kubectl_apply`). An empty value silences the word.\n\nExample:\n\n```json\n\"spokedown.pronunciations\": {\n  \"kubectl\": \"kube control\",\n  \"nginx\": \"engine x\",\n  \"K8s\": \"kates\"\n}\n```\n\nTip: put the cursor on a word and run **Spokedown: Fix Pronunciation…**."
         }
       }
     }

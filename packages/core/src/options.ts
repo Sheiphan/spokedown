@@ -1,4 +1,5 @@
 import type { NormalizeOptions } from "./normalize.js";
+import type { PronunciationMap } from "./pronunciation.js";
 
 export interface ReaderOptions extends NormalizeOptions {
   /** Used for file-specific behaviour, e.g. SKILL.md frontmatter. */
@@ -18,6 +19,8 @@ export interface ReaderOptions extends NormalizeOptions {
   frontmatter: "skip" | "announce";
   footnotes: "skip" | "read";
   images: "alt" | "skip";
+  /** Respellings: { kubectl: "kube control" }. All-lowercase keys ignore case; "" silences a word. */
+  pronunciations?: PronunciationMap;
   /** Long sentences are split near this many characters (Kokoro limit ≈ 510 phonemes). */
   maxSegmentChars: number;
   pauses: {

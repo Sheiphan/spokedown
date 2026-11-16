@@ -35,6 +35,7 @@ export function readConfig() {
       dataBlocks: c.get<"announce" | "skip">("reading.dataBlocks", "announce"),
       frontmatter: c.get<"skip" | "announce">("reading.frontmatter", "skip"),
       maxDigits: c.get<number>("reading.numberDigits", 4),
+      pronunciations: c.get<Record<string, string>>("pronunciations", {}),
     },
   };
 }
@@ -196,6 +197,36 @@ export class Controller implements vscode.Disposable {
     await conf.update("voice", "", vscode.ConfigurationTarget.Global); // voices differ per model
   }
 
+  /** Respell the word under the cursor (or the selection) in the pronunciation dictionary. */
+  async addPronunciation(): Promise<void> {
+    const ed = vscode.window.activeTextEditor;
+    let word = "";
+    if (ed) {
+      const range = ed.selection.isEmpty ? ed.document.getWordRangeAtPosition(ed.selection.active, /[A-Za-z0-9][A-Za-z0-9_.+#-]*/) : ed.selection;
+      word = range ? ed.document.getText(range).trim() : "";
+    }
+    word = (await vscode.window.showInputBox({ title: "Spokedown: word to respell", value: word, prompt: "The word or phrase as written (lowercase ignores case)", validateInput: (v) => (v.trim() ? undefined : "Enter a word") }))?.trim() ?? "";
+    if (!word) return;
+    // Plain lowercase words match any capitalisation; acronyms and CamelCase keep their exact spelling.
+    const key = /[A-Z]/.test(word.slice(1)) || /\s/.test(word) ? word : word.toLowerCase();
+
+    const conf = vscode.workspace.getConfiguration("spokedown");
+    const existing = { ...(conf.inspect<Record<string, string>>("pronunciations")?.globalValue ?? {}) };
+    const spoken = await vscode.window.showInputBox({
+      title: `Spokedown: how should "${key}" sound?`,
+      value: existing[key] ?? "",
+      prompt: 'Spell it the way it should be said, e.g. "kube control". Leave empty to remove the entry.',
+    });
+    if (spoken === undefined) return;
+    if (spoken.trim()) existing[key] = spoken.trim();
+    else delete existing[key];
+    await conf.update("pronunciations", existing, vscode.ConfigurationTarget.Global);
+    if (!spoken.trim()) return void vscode.window.showInformationMessage(`Spokedown: removed the pronunciation for "${key}".`);
+    const hear = "Read from cursor";
+    const pick = await vscode.window.showInformationMessage(`Spokedown: "${key}" will be read as "${spoken.trim()}".`, hear);
+    if (pick === hear) await this.readFromCursor();
+  }
+
   async selectVoice(): Promise<void> {
     const cfg = readConfig();
     try {
@@ -256,7 +287,7 @@ export class Controller implements vscode.Disposable {
     if (e.affectsConfiguration("spokedown.models")) this.engine.setModels(cfg.models);
     if (e.affectsConfiguration("spokedown.audioOutput")) this.sinkKind = "";
     if (["model", "voice", "speed", "models"].some((k) => e.affectsConfiguration(`spokedown.${k}`))) this.session?.invalidateUpcoming();
-    if (e.affectsConfiguration("spokedown.reading") && this.session && this.uri) void this.rebuild();
+    if ((e.affectsConfiguration("spokedown.reading") || e.affectsConfiguration("spokedown.pronunciations")) && this.session && this.uri) void this.rebuild();
     if (this.last && this.script) this.status.update(this.last, this.script.segments, cfg.speed, this.modelLabel());
   }
 
