@@ -27,7 +27,7 @@ describe.runIf(process.platform === "darwin")("PlayerSink (macOS afplay)", () =>
     expect(sink.position()).toBe(pos); // frozen while stopped
     const t0 = performance.now();
     expect(await sink.play(silence(3), SR, 2.6)).toBe("ended"); // only the last 0.4 s plays
-    expect(performance.now() - t0).toBeLessThan(1500);
+    expect(performance.now() - t0).toBeLessThan(2500); // the whole 3 s would take ≥ 3 s; headroom for slow afplay start-up on CI
     sink.dispose();
   }, 10_000);
 });

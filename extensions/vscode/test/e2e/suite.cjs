@@ -72,7 +72,8 @@ async function run() {
   assert.deepEqual(api.controller.highlighter.state.word, wordAtPause, "highlight frozen while paused");
   await vscode.commands.executeCommand("spokedown.resume");
   const resumed = await waitFor(api, (u) => u.state === "playing", 10_000, "resume");
-  assert.equal(resumed.index, paused.index, "resumed on the same sentence");
+  // Paused mid-sentence → resumes in it. Paused at the very end of one (likely on a slow machine) → moves to the next.
+  assert.ok(resumed.index === paused.index || resumed.index === paused.index + 1, `resumed at ${resumed.index}, paused at ${paused.index}`);
 
   // 4. Jump to the next heading
   await vscode.commands.executeCommand("spokedown.nextHeading");
