@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1
+
+- Publish the Intel Mac (darwin-x64) build to the Marketplace; 0.1.0 only reached Apple Silicon.
+
 ## 0.1.0
 
 First public release.

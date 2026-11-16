@@ -2,7 +2,7 @@
   "name": "spokedown",
   "displayName": "Spokedown: Markdown Read Aloud, Word by Word",
   "description": "Reads Markdown aloud with natural local voices and highlights each word in the editor.",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "publisher": "SheiphanJoseph",
   "private": true,
   "license": "GPL-3.0-only",

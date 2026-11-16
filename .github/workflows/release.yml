@@ -39,9 +39,18 @@ jobs:
         working-directory: extensions/vscode
         run: node scripts/package.mjs --all
 
+      # One vsce call per package: each call exchanges its own single-use OIDC token.
       - name: Publish to the VS Code Marketplace
         working-directory: extensions/vscode
-        run: ./node_modules/.bin/vsce publish --oidc --packagePath out/*.vsix
+        run: |
+          for f in out/*.vsix; do
+            echo "publishing $f"
+            ./node_modules/.bin/vsce publish --oidc --packagePath "$f"
+          done
+
+      - name: Verify every target reached the Marketplace
+        working-directory: extensions/vscode
+        run: node scripts/verify-published.mjs
 
       - name: GitHub release
         env:
