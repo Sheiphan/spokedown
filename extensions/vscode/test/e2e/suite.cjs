@@ -57,7 +57,7 @@ async function run() {
   sub.dispose();
   log("words:", seen.map((s) => `${s.spoken}→${JSON.stringify(s.src)}`).join("  "));
   assert.ok(seen.length >= 8, `saw only ${seen.length} words`);
-  for (let i = 1; i < seen.length; i++) assert.ok(seen[i].at >= seen[i - 1].at, "words move forward");
+  for (let i = 1; i < seen.length; i++) assert.ok(seen[i].at >= seen[i - 1].at, `words move forward: #${i - 1} ${JSON.stringify(seen[i - 1])} then #${i} ${JSON.stringify(seen[i])}`);
   assert.ok(seen.every((s) => s.quality === "native"), "Kokoro word timings are native");
   assert.ok(seen.some((s) => s.spoken === "paragraph" && s.src === "paragraph"));
 
