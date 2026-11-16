@@ -44,6 +44,11 @@ jobs:
         working-directory: extensions/vscode
         run: |
           for f in out/*.vsix; do
+            target="$(basename "$f" .vsix)"; target="${target#*-*-}"   # spokedown-0.1.1-darwin-x64 -> darwin-x64
+            if node scripts/verify-published.mjs --has "$target"; then
+              echo "$target is already published, skipping"
+              continue
+            fi
             echo "publishing $f"
             ./node_modules/.bin/vsce publish --oidc --packagePath "$f"
           done
