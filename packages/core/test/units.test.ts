@@ -242,3 +242,24 @@ describe("pronunciation dictionary", () => {
     for (const seg of script.segments) for (const w of seg.words) expect(md.slice(w.srcStart, w.srcEnd).length).toBeGreaterThan(0);
   });
 });
+
+import { STARTER_PRONUNCIATIONS } from "../src/starterPronunciations.js";
+
+describe("starter pronunciations", () => {
+  it("is well-formed: lowercase unique keys, non-empty respellings", () => {
+    const keys = Object.keys(STARTER_PRONUNCIATIONS);
+    expect(keys.length).toBeGreaterThan(40);
+    expect(new Set(keys.map((k) => k.toLowerCase())).size).toBe(keys.length);
+    for (const [k, v] of Object.entries(STARTER_PRONUNCIATIONS)) {
+      expect(k, k).toBe(k.toLowerCase());
+      expect(v.trim().length, k).toBeGreaterThan(0);
+    }
+  });
+
+  it("applies to realistic doc text, and a user entry overrides it", async () => {
+    const md = "Run `kubectl apply` behind nginx, then check the JSON output for the MCP server.";
+    const spoken = async (p: Record<string, string>) => (await buildSpeechScript(md, { pronunciations: p })).segments.map((s) => s.text).join(" ");
+    expect(await spoken(STARTER_PRONUNCIATIONS)).toBe("Run kube control apply behind engine x, then check the jason output for the M C P server.");
+    expect(await spoken({ ...STARTER_PRONUNCIATIONS, json: "json" })).toContain("the json output");
+  });
+});

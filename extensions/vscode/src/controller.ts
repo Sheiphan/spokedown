@@ -1,7 +1,7 @@
 // Connects VS Code (editors, commands, settings) to the reading session and engine.
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { buildSpeechScript, segmentAtOffset, type ReaderOptionsInput, type SpeechScript } from "@spokedown/core";
+import { buildSpeechScript, segmentAtOffset, STARTER_PRONUNCIATIONS, type ReaderOptionsInput, type SpeechScript } from "@spokedown/core";
 import { BUILTIN_MODELS, type Engine, type ModelConfig } from "@spokedown/engine";
 import { Highlighter } from "./highlighter.js";
 import { ReadingSession, type AudioSink, type SessionUpdate } from "./session.js";
@@ -35,7 +35,8 @@ export function readConfig() {
       dataBlocks: c.get<"announce" | "skip">("reading.dataBlocks", "announce"),
       frontmatter: c.get<"skip" | "announce">("reading.frontmatter", "skip"),
       maxDigits: c.get<number>("reading.numberDigits", 4),
-      pronunciations: c.get<Record<string, string>>("pronunciations", {}),
+      // the optional starter list first, so the user's own entries override it
+      pronunciations: { ...(c.get<boolean>("starterPronunciations", false) ? STARTER_PRONUNCIATIONS : {}), ...c.get<Record<string, string>>("pronunciations", {}) },
     },
   };
 }
@@ -287,7 +288,7 @@ export class Controller implements vscode.Disposable {
     if (e.affectsConfiguration("spokedown.models")) this.engine.setModels(cfg.models);
     if (e.affectsConfiguration("spokedown.audioOutput")) this.sinkKind = "";
     if (["model", "voice", "speed", "models"].some((k) => e.affectsConfiguration(`spokedown.${k}`))) this.session?.invalidateUpcoming();
-    if ((e.affectsConfiguration("spokedown.reading") || e.affectsConfiguration("spokedown.pronunciations")) && this.session && this.uri) void this.rebuild();
+    if ((e.affectsConfiguration("spokedown.reading") || e.affectsConfiguration("spokedown.pronunciations") || e.affectsConfiguration("spokedown.starterPronunciations")) && this.session && this.uri) void this.rebuild();
     if (this.last && this.script) this.status.update(this.last, this.script.segments, cfg.speed, this.modelLabel());
   }
 

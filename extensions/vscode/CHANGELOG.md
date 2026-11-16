@@ -3,6 +3,7 @@
 ## 0.3.0
 
 - **Pronunciation dictionary** (`spokedown.pronunciations`, and **Spokedown: Fix Pronunciation…** on the word under the cursor). Respell names and acronyms such as `kubectl` → "kube control". Keys can be words, phrases or parts of identifiers; an empty value silences a word. Highlighting still follows the original text.
+- Optional **starter list** (`spokedown.starterPronunciations`, off by default) with 58 respellings for common developer and AI terms.
 
 ## 0.2.0
 

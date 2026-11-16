@@ -117,6 +117,10 @@ sound ("kube control"), and it is saved for every file. Or edit the setting dire
 - A key also matches part of an identifier: `kubectl` in `kubectl_apply` → "kube control apply".
 - An empty value silences the word.
 - Highlighting still follows the original text. Changes apply immediately, even mid-reading.
+- **Starter list:** turn on `spokedown.starterPronunciations` for 58 common developer and AI terms
+  (`kubectl`, `nginx`, `sudo`, `yaml`, `json`, `mcp`, `llm`, …). It is off by default because the
+  respellings are best-effort; your own entries override it, and mapping a word to itself
+  (`"json": "json"`) undoes one. [See the list](packages/core/src/starterPronunciations.ts).
 
 ## Audio on each OS
 

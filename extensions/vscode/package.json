@@ -469,6 +469,11 @@
             "type": "string"
           },
           "markdownDescription": "Respell words so the voice says them right. Keys are matched against the Markdown source: plain lowercase keys ignore case (`kubectl` also matches `Kubectl` and `` `kubectl` ``), keys with capitals match exactly (`K8s`), and a key with spaces matches a phrase (`Claude Code`). A key also matches a part of an identifier (`kubectl` in `kubectl_apply`). An empty value silences the word.\n\nExample:\n\n```json\n\"spokedown.pronunciations\": {\n  \"kubectl\": \"kube control\",\n  \"nginx\": \"engine x\",\n  \"K8s\": \"kates\"\n}\n```\n\nTip: put the cursor on a word and run **Spokedown: Fix Pronunciation…**."
+        },
+        "spokedown.starterPronunciations": {
+          "type": "boolean",
+          "default": false,
+          "markdownDescription": "Turn on a built-in starter list of 58 respellings for names common in developer and AI docs (`kubectl`, `nginx`, `sudo`, `yaml`, `mcp`, `llm`, …). They are best-effort; your own `#spokedown.pronunciations#` always override them. To undo a single entry, map it to itself, e.g. `\"json\": \"json\"`. [Full list](https://github.com/Sheiphan/spokedown/blob/main/packages/core/src/starterPronunciations.ts)."
         }
       }
     }
