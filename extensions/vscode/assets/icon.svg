@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 256 256">
+  <rect width="256" height="256" rx="56" fill="#1d2230"/>
+  <!-- Markdown heading marker + text lines -->
+  <rect x="44" y="62" width="44" height="14" rx="7" fill="#7aa2f7"/>
+  <rect x="96" y="62" width="76" height="14" rx="7" fill="#5b6580"/>
+  <rect x="44" y="104" width="62" height="14" rx="7" fill="#5b6580"/>
+  <!-- the word being spoken -->
+  <rect x="112" y="97" width="68" height="28" rx="9" fill="#f5b83d"/>
+  <rect x="124" y="104" width="44" height="14" rx="7" fill="#1d2230"/>
+  <rect x="188" y="104" width="24" height="14" rx="7" fill="#5b6580"/>
+  <rect x="44" y="146" width="96" height="14" rx="7" fill="#5b6580"/>
+  <rect x="148" y="146" width="40" height="14" rx="7" fill="#5b6580"/>
+  <!-- sound waves -->
+  <g fill="none" stroke="#f5b83d" stroke-width="12" stroke-linecap="round">
+    <path d="M60 204v0"/>
+    <path d="M92 192v24"/>
+    <path d="M124 182v44"/>
+    <path d="M156 192v24"/>
+    <path d="M188 200v8"/>
+  </g>
+</svg>

@@ -2,7 +2,6 @@
 // extensions, so this panel renders the Markdown itself (same look via VS Code's
 // markdown.css) and receives live highlights.
 import * as crypto from "node:crypto";
-import * as fs from "node:fs";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import type { HighlightState } from "./highlighter.js";
@@ -194,18 +193,11 @@ export class PreviewManager implements vscode.Disposable {
   }
 
   private assetRoots(): { media: vscode.Uri; dist: vscode.Uri; katex: vscode.Uri; mermaid: vscode.Uri; vscodeMedia: vscode.Uri } {
-    const real = (u: vscode.Uri) => {
-      try {
-        return vscode.Uri.file(fs.realpathSync(u.fsPath));
-      } catch {
-        return u;
-      }
-    };
     return {
       media: vscode.Uri.joinPath(this.extensionUri, "media"),
       dist: vscode.Uri.joinPath(this.extensionUri, "dist"),
-      katex: real(vscode.Uri.joinPath(this.extensionUri, "node_modules", "katex", "dist")),
-      mermaid: real(vscode.Uri.joinPath(this.extensionUri, "node_modules", "mermaid", "dist")),
+      katex: vscode.Uri.joinPath(this.extensionUri, "dist", "vendor", "katex"),
+      mermaid: vscode.Uri.joinPath(this.extensionUri, "dist", "vendor", "mermaid"),
       vscodeMedia: vscode.Uri.file(path.join(vscode.env.appRoot, "extensions", "markdown-language-features", "media")),
     };
   }

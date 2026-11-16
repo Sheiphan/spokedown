@@ -1,0 +1,49 @@
+name: Release
+
+# Push a tag such as v0.1.0 to publish. Authentication uses Marketplace Trusted Publishing
+# (policy for this repo and workflow on the publisher page); no token is stored.
+on:
+  push:
+    tags: ["v*"]
+
+jobs:
+  publish:
+    runs-on: macos-latest
+    permissions:
+      contents: write   # attach the .vsix files to the GitHub release
+      id-token: write   # OIDC token for Marketplace trusted publishing
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - run: pnpm -r typecheck
+      - run: pnpm -r test
+
+      - name: Tag matches extension version
+        working-directory: extensions/vscode
+        run: |
+          v="$(node -p "require('./package.json').version")"
+          if [ "refs/tags/v$v" != "$GITHUB_REF" ]; then
+            echo "Tag $GITHUB_REF does not match package.json version v$v" >&2
+            exit 1
+          fi
+
+      - name: Package (Apple Silicon and Intel)
+        working-directory: extensions/vscode
+        run: node scripts/package.mjs --all
+
+      - name: Publish to the VS Code Marketplace
+        working-directory: extensions/vscode
+        run: ./node_modules/.bin/vsce publish --oidc --packagePath out/*.vsix
+
+      - name: GitHub release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" extensions/vscode/out/*.vsix --title "$GITHUB_REF_NAME" --generate-notes

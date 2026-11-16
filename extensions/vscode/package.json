@@ -3,14 +3,15 @@
   "displayName": "Spokedown: Markdown Read Aloud, Word by Word",
   "description": "Reads Markdown aloud with natural local voices and highlights each word in the editor.",
   "version": "0.1.0",
-  "publisher": "local",
+  "publisher": "SheiphanJoseph",
   "private": true,
-  "license": "MIT",
+  "license": "GPL-3.0-only",
   "engines": {
     "vscode": "^1.100.0"
   },
   "categories": [
-    "Other"
+    "Other",
+    "Education"
   ],
   "main": "./dist/extension.cjs",
   "activationEvents": [
@@ -448,33 +449,35 @@
     "watch": "node build.mjs --watch",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "test:e2e": "node build.mjs && node test/e2e/run.mjs"
+    "test:e2e": "node build.mjs && node test/e2e/run.mjs",
+    "package": "node scripts/package.mjs"
   },
   "dependencies": {
     "@huggingface/transformers": "3.8.1",
     "kokoro-js": "1.2.1",
     "mathjax-full": "^3.2.2",
-    "speech-rule-engine": "^4.1.5",
-    "katex": "0.19.1",
-    "mermaid": "12.3.0"
+    "speech-rule-engine": "^4.1.5"
   },
   "devDependencies": {
     "@spokedown/core": "workspace:*",
     "@spokedown/engine": "workspace:*",
+    "@types/hast": "^3.0.4",
+    "@types/jsdom": "^21.1.7",
+    "@types/mdast": "^4.0.4",
     "@types/vscode": "1.100.0",
     "@vscode/test-electron": "^3.1.0",
+    "@vscode/vsce": "^4.1.1",
     "esbuild": "0.28.2",
-    "remark-rehype": "11.1.2",
-    "rehype-katex": "7.0.1",
-    "rehype-stringify": "10.0.1",
-    "rehype-raw": "7.0.0",
-    "rehype-highlight": "7.0.2",
-    "unist-util-visit": "^5.0.0",
-    "@types/hast": "^3.0.4",
-    "@types/mdast": "^4.0.4",
     "jsdom": "^26.1.0",
-    "@types/jsdom": "^21.1.7",
-    "unified": "^11.0.5"
+    "katex": "0.19.1",
+    "mermaid": "12.3.0",
+    "rehype-highlight": "7.0.2",
+    "rehype-katex": "7.0.1",
+    "rehype-raw": "7.0.0",
+    "rehype-stringify": "10.0.1",
+    "remark-rehype": "11.1.2",
+    "unified": "^11.0.5",
+    "unist-util-visit": "^5.0.0"
   },
   "author": "Sheiphan Shaijan Joseph",
   "repository": {
@@ -484,5 +487,26 @@
   "homepage": "https://github.com/Sheiphan/spokedown#readme",
   "bugs": {
     "url": "https://github.com/Sheiphan/spokedown/issues"
+  },
+  "preview": true,
+  "icon": "assets/icon.png",
+  "keywords": [
+    "markdown",
+    "text to speech",
+    "tts",
+    "read aloud",
+    "kokoro",
+    "offline",
+    "accessibility",
+    "math",
+    "karaoke",
+    "highlight",
+    "claude",
+    "agents",
+    "speech"
+  ],
+  "galleryBanner": {
+    "color": "#1d2230",
+    "theme": "dark"
   }
 }

@@ -38,7 +38,17 @@ Everything runs on your machine. No account, no API key, no telemetry.
 - **Pluggable models** — Kokoro (default), Kokoro compact, macOS system voices, or any OpenAI-compatible speech server (e.g. [mlx-audio](https://github.com/Blaizzy/mlx-audio) for Qwen3-TTS and others, Kokoro-FastAPI).
 - **Fast re-reads** — synthesized audio is cached on disk; a few sentences are generated ahead of playback.
 
-## Install (from source)
+## Install
+
+Search for **Spokedown** in the VS Code Extensions view (publisher *SheiphanJoseph*), or run:
+
+```bash
+code --install-extension SheiphanJoseph.spokedown
+```
+
+Requires macOS (Apple Silicon or Intel) and VS Code 1.100+.
+
+### From source
 
 Requirements: macOS, Node 20+, [pnpm](https://pnpm.io) 9+, VS Code 1.100+.
 
@@ -111,7 +121,10 @@ pnpm -r test           # unit tests (core, engine, extension)
 cd extensions/vscode
 pnpm test:e2e          # end-to-end in a downloaded VS Code (silent audio; needs the Kokoro model cached)
 
-cd packages/core && pnpm dump path/to/file.md      # write the spoken script for review
+cd extensions/vscode
+pnpm package darwin-arm64   # build a self-contained .vsix (also darwin-x64, or --all)
+
+cd ../../packages/core && pnpm dump path/to/file.md      # write the spoken script for review
 cd packages/engine && pnpm speak path/to/file.md   # synthesize a stretch to out/speak.wav + word timings
 ```
 
@@ -124,10 +137,14 @@ cd packages/engine && pnpm speak path/to/file.md   # synthesize a stretch to out
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+The source code is MIT — see [LICENSE](LICENSE).
 
-Third-party components keep their own licenses: Kokoro-82M weights, kokoro-js,
-transformers.js, MathJax and speech-rule-engine (Apache-2.0); ONNX Runtime, KaTeX,
-Mermaid, unified/remark (MIT). Kokoro's `phonemizer` dependency embeds
-[eSpeak NG](https://github.com/espeak-ng/espeak-ng) (GPL-3.0), so a packaged build that
-bundles it is subject to GPL-3.0 terms.
+The **published extension (the packaged `.vsix`) is GPL-3.0** — see
+[extensions/vscode/LICENSE](extensions/vscode/LICENSE). Kokoro's `phonemizer` dependency
+embeds [eSpeak NG](https://github.com/espeak-ng/espeak-ng) (GPL-3.0), and the package
+bundles it, so the distributed whole is GPL-3.0. You can reuse the MIT-licensed code in
+`packages/` and `extensions/vscode/src` under MIT on its own terms.
+
+Other components keep their own licenses: Kokoro-82M weights, kokoro-js, transformers.js,
+MathJax and speech-rule-engine (Apache-2.0); ONNX Runtime, KaTeX, Mermaid,
+unified/remark (MIT).
