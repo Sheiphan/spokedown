@@ -51,10 +51,12 @@ async function run() {
       seen.push({ spoken: w.text, src: text.slice(w.srcStart, w.srcEnd), quality: u.quality, at: w.srcStart });
     }
   });
-  await sleep(6000);
+  // Wait for the words instead of a fixed time: slow CI machines synthesize the next sentence late.
+  const deadline = Date.now() + 90_000;
+  while (Date.now() < deadline && !(seen.length >= 8 && seen.some((s) => s.spoken === "paragraph"))) await sleep(250);
   sub.dispose();
   log("words:", seen.map((s) => `${s.spoken}→${JSON.stringify(s.src)}`).join("  "));
-  assert.ok(seen.length >= 8, `saw ${seen.length} words in 6 s`);
+  assert.ok(seen.length >= 8, `saw only ${seen.length} words`);
   for (let i = 1; i < seen.length; i++) assert.ok(seen[i].at >= seen[i - 1].at, "words move forward");
   assert.ok(seen.every((s) => s.quality === "native"), "Kokoro word timings are native");
   assert.ok(seen.some((s) => s.spoken === "paragraph" && s.src === "paragraph"));
