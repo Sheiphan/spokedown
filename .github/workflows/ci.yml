@@ -75,7 +75,7 @@ jobs:
           cat e2e.log
           if [ "$code" != 0 ]; then
             # Surface the useful lines as an annotation so they show on the run summary.
-            summary="$(grep -E '\[e2e\]|rror|ailed|Cannot|ENOENT|timeout' e2e.log | tail -25 | head -c 3000 | sed ':a;N;$!ba;s/\n/%0A/g')"
+            summary="$(tail -n 40 e2e.log | cut -c1-300 | head -c 3500 | sed ':a;N;$!ba;s/\n/%0A/g')"
             echo "::error title=e2e failed on $RUNNER_OS ($target)::$summary"
             exit "$code"
           fi
