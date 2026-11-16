@@ -61,16 +61,21 @@ jobs:
       - name: Package for this OS
         working-directory: extensions/vscode
         run: node scripts/package.mjs --native
-      - name: End-to-end test on the packaged extension (Linux)
-        if: runner.os == 'Linux'
-        working-directory: extensions/vscode
-        run: SPOKEDOWN_EXT_DIR="stage/linux-x64" xvfb-run -a node test/e2e/run.mjs
-      - name: End-to-end test on the packaged extension (macOS)
-        if: runner.os == 'macOS'
-        working-directory: extensions/vscode
-        run: SPOKEDOWN_EXT_DIR="stage/darwin-arm64" node test/e2e/run.mjs
-      - name: End-to-end test on the packaged extension (Windows)
-        if: runner.os == 'Windows'
+      - name: End-to-end test on the packaged extension
         working-directory: extensions/vscode
         shell: bash
-        run: SPOKEDOWN_EXT_DIR="stage/win32-x64" node test/e2e/run.mjs
+        run: |
+          target="$(node -p "process.platform + '-' + process.arch")"
+          code=0
+          if [ "$RUNNER_OS" = Linux ]; then
+            SPOKEDOWN_EXT_DIR="stage/$target" xvfb-run -a node test/e2e/run.mjs > e2e.log 2>&1 || code=$?
+          else
+            SPOKEDOWN_EXT_DIR="stage/$target" node test/e2e/run.mjs > e2e.log 2>&1 || code=$?
+          fi
+          cat e2e.log
+          if [ "$code" != 0 ]; then
+            # Surface the useful lines as an annotation so they show on the run summary.
+            summary="$(grep -E '\[e2e\]|rror|ailed|Cannot|ENOENT|timeout' e2e.log | tail -25 | head -c 3000 | sed ':a;N;$!ba;s/\n/%0A/g')"
+            echo "::error title=e2e failed on $RUNNER_OS ($target)::$summary"
+            exit "$code"
+          fi

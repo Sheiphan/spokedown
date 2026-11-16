@@ -9,5 +9,5 @@ export function defaultDataDir(
 ): string {
   if (platform === "win32") return path.win32.join(env.LOCALAPPDATA || path.win32.join(home, "AppData", "Local"), "spokedown");
   if (platform === "linux" && env.XDG_CACHE_HOME) return path.posix.join(env.XDG_CACHE_HOME, "spokedown");
-  return path.join(home, ".cache", "spokedown");
+  return path.posix.join(home, ".cache", "spokedown");
 }
