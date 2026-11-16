@@ -1,5 +1,14 @@
 # Changelog
 
+## 0.2.0
+
+- **Windows and Linux support** (x64 and arm64), in addition to macOS. Sound plays through the OS's own player: PowerShell's SoundPlayer on Windows, and `paplay`, `pw-play`, `aplay`, `ffplay`, `play` or `mpv` on Linux.
+- On Windows the highlight clock starts when the player reports sound is about to begin, so slow PowerShell start-up no longer shifts highlighting.
+- A player that fails now shows an error instead of silently racing through the document.
+- Models and cache follow each platform's convention (`%LOCALAPPDATA%` on Windows, `$XDG_CACHE_HOME` on Linux). macOS keeps `~/.cache/spokedown`.
+- `spokedown.audioOutput` gains `auto` (the default; `afplay` still works as an alias).
+- Warns when used in a Remote/SSH/WSL window, where there is no sound device.
+
 ## 0.1.2
 
 - Release tooling only: no changes to the extension itself.

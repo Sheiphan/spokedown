@@ -1,7 +1,8 @@
 // Builds a self-contained, platform-specific .vsix.
 //
 //   node scripts/package.mjs darwin-arm64        # one target
-//   node scripts/package.mjs --all               # darwin-arm64 and darwin-x64
+//   node scripts/package.mjs --native            # the machine's own target
+//   node scripts/package.mjs --all               # every target in targets.mjs
 //   node scripts/package.mjs --update-lock       # regenerate runtime.package-lock.json
 //
 // The extension bundle keeps a few libraries external (they load data files or native code
@@ -12,11 +13,12 @@ import { execFileSync } from "node:child_process";
 import { cpSync, existsSync, mkdirSync, readdirSync, readFileSync, rmSync, statSync, writeFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { TARGETS, nativeTarget } from "./targets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const repoRoot = path.resolve(root, "../..");
-const TARGETS = ["darwin-arm64", "darwin-x64"];
-const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, stdio: "inherit" });
+// npm is npm.cmd on Windows, which needs a shell to launch.
+const run = (cmd, args, cwd) => execFileSync(cmd, args, { cwd, stdio: "inherit", shell: process.platform === "win32" && cmd === "npm" });
 const lockFile = path.join(root, "runtime.package-lock.json");
 
 const manifest = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
@@ -71,6 +73,7 @@ function build(target) {
   writeFileSync(path.join(stage, ".vscodeignore"), "**/*.map\n");
 
   const npmFlags = ["--omit=dev", "--ignore-scripts", "--no-audit", "--no-fund", `--os=${platform}`, `--cpu=${arch}`];
+  if (platform === "linux") npmFlags.push("--libc=glibc"); // sharp ships separate glibc and musl binaries
   if (existsSync(lockFile)) {
     cpSync(lockFile, path.join(stage, "package-lock.json"));
     run("npm", ["ci", ...npmFlags], stage);
@@ -83,7 +86,7 @@ function build(target) {
   const out = path.join(root, "out");
   mkdirSync(out, { recursive: true });
   const vsix = path.join(out, `${manifest.name}-${manifest.version}-${target}.vsix`);
-  run(path.join(root, "node_modules", ".bin", "vsce"), ["package", "--target", target, "--out", vsix], stage);
+  run(process.execPath, [path.join(root, "node_modules", "@vscode", "vsce", "vsce"), "package", "--target", target, "--out", vsix], stage);
   console.log(`wrote ${vsix} (${(statSync(vsix).size / 1e6).toFixed(1)} MB)`);
 }
 
@@ -99,8 +102,8 @@ if (args.includes("--update-lock")) {
   console.log("updated runtime.package-lock.json");
 } else {
   run("node", ["build.mjs"], root);
-  const targets = args.includes("--all") ? TARGETS : args.filter((a) => !a.startsWith("--"));
-  if (targets.length === 0) throw new Error(`usage: package.mjs <${TARGETS.join("|")}> | --all | --update-lock`);
+  const targets = args.includes("--all") ? TARGETS : args.includes("--native") ? [nativeTarget()] : args.filter((a) => !a.startsWith("--"));
+  if (targets.length === 0) throw new Error(`usage: package.mjs <${TARGETS.join("|")}> | --native | --all | --update-lock`);
   for (const t of targets) {
     if (!TARGETS.includes(t)) throw new Error(`unknown target ${t}`);
     build(t);

@@ -12,7 +12,7 @@ fs.copyFileSync(path.resolve(here, "../../../../packages/core/test/fixtures/synt
 fs.mkdirSync(path.join(workspace, ".vscode"));
 fs.writeFileSync(
   path.join(workspace, ".vscode/settings.json"),
-  JSON.stringify({ "spokedown.audioOutput": "silent", "spokedown.model": process.env.SPOKEDOWN_MODEL ?? "kokoro", "spokedown.speed": 1 }, null, 2),
+  JSON.stringify({ "spokedown.dataDirectory": path.join(os.homedir(), ".cache", "spokedown"), "spokedown.audioOutput": "silent", "spokedown.model": process.env.SPOKEDOWN_MODEL ?? "kokoro", "spokedown.speed": 1 }, null, 2),
 );
 
 try {

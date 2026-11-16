@@ -6,12 +6,13 @@
 import { readFileSync } from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { TARGETS } from "./targets.mjs";
 
 const root = path.resolve(path.dirname(fileURLToPath(import.meta.url)), "..");
 const pkg = JSON.parse(readFileSync(path.join(root, "package.json"), "utf8"));
 const { publisher, name } = pkg;
 const version = process.env.VERIFY_VERSION ?? pkg.version; // override is for testing the script
-const EXPECTED = ["darwin-arm64", "darwin-x64"];
+const EXPECTED = TARGETS;
 const arg = (flag) => process.argv[process.argv.indexOf(flag) + 1];
 
 async function has(target) {

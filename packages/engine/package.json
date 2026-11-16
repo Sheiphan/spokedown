@@ -15,7 +15,8 @@
     "build": "tsc -p tsconfig.json",
     "typecheck": "tsc -p tsconfig.json --noEmit",
     "test": "vitest run",
-    "speak": "tsx scripts/speak.ts"
+    "speak": "tsx scripts/speak.ts",
+    "fetch-model": "tsx scripts/fetch-model.ts"
   },
   "dependencies": {
     "@huggingface/transformers": "3.8.1",

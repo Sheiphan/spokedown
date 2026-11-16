@@ -7,7 +7,12 @@ on:
 
 jobs:
   test:
-    runs-on: macos-latest
+    name: test (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
     steps:
       - uses: actions/checkout@v4
       - uses: pnpm/action-setup@v4
@@ -20,5 +25,52 @@ jobs:
       - run: pnpm install --frozen-lockfile
       - run: pnpm -r build
       - run: pnpm -r typecheck
-      # Kokoro integration tests skip automatically when the model is not cached.
+      # The real Kokoro voice, cached between runs, so the integration tests run on every OS.
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/spokedown/models
+          key: kokoro-model-v1
+      - run: pnpm --filter @spokedown/engine fetch-model
       - run: pnpm -r test
+
+  # Packages the extension for this OS exactly as the release does, installs it into a real
+  # VS Code, and runs the end-to-end test (silent audio) against the packaged files.
+  package-smoke:
+    name: packaged extension (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [macos-latest, ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: pnpm/action-setup@v4
+        with:
+          version: 11
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: pnpm
+      - run: pnpm install --frozen-lockfile
+      - run: pnpm -r build
+      - uses: actions/cache@v4
+        with:
+          path: ~/.cache/spokedown/models
+          key: kokoro-model-v1
+      - run: pnpm --filter @spokedown/engine fetch-model
+      - name: Package for this OS
+        working-directory: extensions/vscode
+        run: node scripts/package.mjs --native
+      - name: End-to-end test on the packaged extension (Linux)
+        if: runner.os == 'Linux'
+        working-directory: extensions/vscode
+        run: SPOKEDOWN_EXT_DIR="stage/linux-x64" xvfb-run -a node test/e2e/run.mjs
+      - name: End-to-end test on the packaged extension (macOS)
+        if: runner.os == 'macOS'
+        working-directory: extensions/vscode
+        run: SPOKEDOWN_EXT_DIR="stage/darwin-arm64" node test/e2e/run.mjs
+      - name: End-to-end test on the packaged extension (Windows)
+        if: runner.os == 'Windows'
+        working-directory: extensions/vscode
+        shell: bash
+        run: SPOKEDOWN_EXT_DIR="stage/win32-x64" node test/e2e/run.mjs

@@ -12,7 +12,8 @@ of d sub k"). Built for technical docs, notes and coding-agent files (`README.md
 
 Everything runs on your machine. No account, no API key, no telemetry.
 
-> **Status:** early (0.1). Audio playback currently needs **macOS** (Apple Silicon or Intel).
+> **Status:** early (0.x). Works on **macOS, Windows and Linux** (x64 and arm64). Windows and
+> Linux support is new — please [report problems](https://github.com/Sheiphan/spokedown/issues).
 
 ## Features
 
@@ -46,11 +47,12 @@ Search for **Spokedown** in the VS Code Extensions view (publisher *SheiphanJose
 code --install-extension SheiphanJoseph.spokedown
 ```
 
-Requires macOS (Apple Silicon or Intel) and VS Code 1.100+.
+Requires VS Code 1.100+ on macOS, Windows or Linux (x64 or arm64), running locally (not in a
+Remote/SSH/WSL window — there is no sound device there). See [Audio on each OS](#audio-on-each-os).
 
 ### From source
 
-Requirements: macOS, Node 20+, [pnpm](https://pnpm.io) 9+, VS Code 1.100+.
+Requirements: Node 20+, [pnpm](https://pnpm.io) 9+, VS Code 1.100+.
 
 ```bash
 git clone https://github.com/Sheiphan/spokedown.git
@@ -63,14 +65,14 @@ ln -s "$PWD/extensions/vscode" ~/.vscode/extensions/local.spokedown-0.1.0
 
 Then run **Developer: Reload Window** in VS Code (twice the first time — VS Code
 refreshes its extension cache on the first reload). Open a Markdown file and press
-**⌃⌥R**, or click **Read** in the status bar.
+**⌃⌥R** (Ctrl+Alt+R on Windows and Linux), or click **Read** in the status bar.
 
 On first use the Kokoro model (326 MB) is downloaded from Hugging Face into
-`~/.cache/spokedown/models`. That download is the only network access.
+`~/.cache/spokedown/models` (`%LOCALAPPDATA%\spokedown` on Windows, `$XDG_CACHE_HOME/spokedown` on Linux). That download is the only network access.
 
 ## Usage
 
-| Action | macOS keys |
+| Action | macOS keys (Windows/Linux: Ctrl+Alt+…) |
 |---|---|
 | Play / pause (from the cursor line) | ⌃⌥R |
 | Next / previous sentence | ⌃⌥→ / ⌃⌥← |
@@ -94,6 +96,20 @@ equations / diagrams / frontmatter, number precision, highlight timing
 ]
 ```
 
+## Audio on each OS
+
+Spokedown plays sound by handing a WAV file to a program your OS already has:
+
+| OS | Player | Notes |
+|---|---|---|
+| macOS | `afplay` | Built in. |
+| Windows | PowerShell `System.Media.SoundPlayer` | Built in (Windows PowerShell 5.1). |
+| Linux | first found of `paplay`, `pw-play`, `aplay`, `ffplay`, `play` (SoX), `mpv` | Most desktops have one. If not: `sudo apt install pulseaudio-utils` (or `alsa-utils`). |
+
+If highlighting runs ahead of the voice, raise `spokedown.audioLatencyMs` (some Linux
+players buffer 200–500 ms). The *macOS system voice* model is macOS-only; Kokoro and
+OpenAI-compatible servers work everywhere.
+
 ## How it works
 
 ```
@@ -107,8 +123,8 @@ extensions/vscode  playback session, editor decorations, status bar, read-along 
 - **Word timings** come from the timestamped Kokoro export's per-phoneme durations. When
   the phonemizer merges or splits words ("on the" → one phoneme group), a small
   dynamic-programming alignment by phoneme length keeps every word exact.
-- **Audio** plays through macOS `afplay`; pause and seek restart from an exact sample
-  offset of the in-memory audio, so the highlight clock stays precise.
+- **Audio** plays through the OS's own player (see below); pause and seek restart from an
+  exact sample offset of the in-memory audio, so the highlight clock stays precise.
 - **The preview** can't be VS Code's own (other extensions can't drive it), so it's a
   webview that renders the same parse tree with source offsets on every text span and
   highlights with the CSS Custom Highlight API.

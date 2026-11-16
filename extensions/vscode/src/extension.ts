@@ -1,8 +1,8 @@
-import * as os from "node:os";
 import * as path from "node:path";
 import * as vscode from "vscode";
 import { Engine } from "@spokedown/engine";
 import { Controller, readConfig } from "./controller.js";
+import { defaultDataDir } from "./paths.js";
 
 export interface SpokedownApi {
   controller: Controller;
@@ -11,7 +11,7 @@ export interface SpokedownApi {
 
 export function activate(context: vscode.ExtensionContext): SpokedownApi {
   const conf = vscode.workspace.getConfiguration("spokedown");
-  const dataDir = conf.get<string>("dataDirectory") || path.join(os.homedir(), ".cache", "spokedown");
+  const dataDir = conf.get<string>("dataDirectory") || defaultDataDir();
   const engine = new Engine({
     models: readConfig().models,
     modelsDir: path.join(dataDir, "models"),

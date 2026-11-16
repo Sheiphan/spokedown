@@ -5,7 +5,7 @@ import { buildSpeechScript, segmentAtOffset, type ReaderOptionsInput, type Speec
 import { BUILTIN_MODELS, type Engine, type ModelConfig } from "@spokedown/engine";
 import { Highlighter } from "./highlighter.js";
 import { ReadingSession, type AudioSink, type SessionUpdate } from "./session.js";
-import { AfplaySink, SilentSink } from "./sinks.js";
+import { PlayerSink, SilentSink } from "./sinks.js";
 import { StatusBar } from "./statusBar.js";
 import { shiftScript } from "./shift.js";
 import { startPointAtOffset, startPointForLine, type StartPoint } from "./startPoint.js";
@@ -24,7 +24,7 @@ export function readConfig() {
     words: c.get<boolean>("highlight.words", true),
     leadMs: c.get<number>("highlight.leadMs", 60),
     autoScroll: c.get<boolean>("autoScroll", true),
-    audioOutput: c.get<"afplay" | "silent">("audioOutput", "afplay"),
+    audioOutput: c.get<"auto" | "afplay" | "silent">("audioOutput", "auto"), // "afplay" is the pre-0.2 spelling of "auto"
     latencyMs: c.get<number>("audioLatencyMs", 90),
     reading: {
       code: c.get<"announce" | "read" | "skip">("reading.code", "announce"),
@@ -180,7 +180,7 @@ export class Controller implements vscode.Disposable {
 
   async selectModel(): Promise<void> {
     const cfg = readConfig();
-    const items = this.engine.models().map((m) => {
+    const items = this.engine.models().filter((m) => m.type !== "say" || process.platform === "darwin").map((m) => {
       const builtin = BUILTIN_MODELS.find((b) => b.config.id === m.id);
       return {
         label: m.label ?? m.id,
@@ -287,14 +287,15 @@ export class Controller implements vscode.Disposable {
   }
 
   private getSink(): AudioSink {
-    const cfg = readConfig();
-    const kind = process.platform === "darwin" ? cfg.audioOutput : "silent";
+    const kind = readConfig().audioOutput === "silent" ? "silent" : "player";
     if (!this.sink || kind !== this.sinkKind) {
       this.sink?.dispose?.();
-      this.sink = kind === "afplay" ? new AfplaySink(() => readConfig().latencyMs / 1000) : new SilentSink();
+      this.sink = kind === "player" ? new PlayerSink(() => readConfig().latencyMs / 1000) : new SilentSink();
       this.sinkKind = kind;
-      if (process.platform !== "darwin" && cfg.audioOutput === "afplay") {
-        void vscode.window.showWarningMessage("Spokedown: audio playback currently needs macOS (afplay). Running silently.");
+      if (kind === "player" && vscode.env.remoteName) {
+        void vscode.window.showWarningMessage(
+          `Spokedown plays sound on the machine where the extension runs, and this window is remote (${vscode.env.remoteName}), which usually has no audio device. Open the folder locally to hear it.`,
+        );
       }
     }
     return this.sink;
@@ -411,7 +412,8 @@ export class Controller implements vscode.Disposable {
     const msg = e instanceof Error ? e.message : String(e);
     if (/abort/i.test(msg)) return;
     const useSystem = "Use macOS voice";
-    void vscode.window.showErrorMessage(`Spokedown: ${msg}`, ...(readConfig().model !== "system" ? [useSystem] : [])).then(async (a) => {
+    const offerSystem = process.platform === "darwin" && readConfig().model !== "system";
+    void vscode.window.showErrorMessage(`Spokedown: ${msg}`, ...(offerSystem ? [useSystem] : [])).then(async (a) => {
       if (a === useSystem) await vscode.workspace.getConfiguration("spokedown").update("model", "system", vscode.ConfigurationTarget.Global);
     });
   }

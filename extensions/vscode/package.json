@@ -1,8 +1,8 @@
 {
   "name": "spokedown",
   "displayName": "Spokedown: Markdown Read Aloud, Word by Word",
-  "description": "Reads Markdown aloud with natural local voices and highlights each word in the editor.",
-  "version": "0.1.2",
+  "description": "Read Markdown aloud with a natural local voice that highlights every word. Understands math, tables, code and diagrams. Built for technical and coding-agent docs. macOS, Windows and Linux.",
+  "version": "0.2.0",
   "publisher": "SheiphanJoseph",
   "private": true,
   "license": "GPL-3.0-only",
@@ -242,7 +242,7 @@
         "spokedown.model": {
           "type": "string",
           "default": "kokoro",
-          "markdownDescription": "Model to read with: `kokoro` (natural, exact word highlighting), `kokoro-compact` (smaller download), `system` (macOS voices), or the `id` of an entry in `#spokedown.models#`."
+          "markdownDescription": "Model to read with: `kokoro` (natural, exact word highlighting), `kokoro-compact` (smaller download), `system` (macOS voices, macOS only), or the `id` of an entry in `#spokedown.models#`."
         },
         "spokedown.voice": {
           "type": "string",
@@ -318,7 +318,7 @@
         "spokedown.dataDirectory": {
           "type": "string",
           "default": "",
-          "markdownDescription": "Where models and the audio cache live. Empty = `~/.cache/spokedown` (shared with the command-line tools)."
+          "markdownDescription": "Where models and the audio cache live. Empty = `~/.cache/spokedown` (macOS), `$XDG_CACHE_HOME/spokedown` or `~/.cache/spokedown` (Linux), `%LOCALAPPDATA%\\\\spokedown` (Windows)."
         },
         "spokedown.cacheSizeMB": {
           "type": "number",
@@ -351,16 +351,22 @@
         "spokedown.audioOutput": {
           "type": "string",
           "enum": [
+            "auto",
             "afplay",
             "silent"
           ],
-          "default": "afplay",
-          "markdownDescription": "`afplay`: play through macOS. `silent`: run the reading clock without sound (for testing highlighting)."
+          "default": "auto",
+          "enumDescriptions": [
+            "Play through the operating system (afplay on macOS, PowerShell on Windows, paplay/pw-play/aplay and others on Linux).",
+            "Same as auto (the old name, kept so existing settings keep working).",
+            "Run the reading clock without sound (for testing highlighting)."
+          ],
+          "markdownDescription": "How audio is played. `auto` uses your OS's own player; `silent` runs the highlighting clock without sound."
         },
         "spokedown.audioLatencyMs": {
           "type": "number",
           "default": 90,
-          "description": "Delay between starting playback and hearing sound; highlighting compensates for it."
+          "description": "Delay between starting playback and hearing sound; highlighting compensates for it. Raise it if highlighting runs ahead of the voice (Linux players with large buffers may need 200–500)."
         },
         "spokedown.autoScroll": {
           "type": "boolean",
