@@ -16,6 +16,7 @@ export function activate(context: vscode.ExtensionContext): SpokedownApi {
     models: readConfig().models,
     modelsDir: path.join(dataDir, "models"),
     cacheDir: path.join(dataDir, "audio"),
+    trimSilence: () => vscode.workspace.getConfiguration("spokedown").get<boolean>("pause.trimSilence", true),
     cacheMaxBytes: conf.get<number>("cacheSizeMB", 512) * 1024 * 1024,
   });
   const controller = new Controller(engine, context.extensionUri);

@@ -6,3 +6,4 @@ export { KokoroOnnxBackend, durationsToWordTimings } from "./backends/kokoroOnnx
 export { OpenAiCompatBackend } from "./backends/openaiCompat.js";
 export { MacSayBackend, parseSayVoices } from "./backends/macSay.js";
 export { decodeWav, encodeWav } from "./wav.js";
+export { trimSilence, type TrimOptions, type Trimmed } from "./trim.js";

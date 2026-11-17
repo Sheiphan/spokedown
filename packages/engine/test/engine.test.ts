@@ -240,3 +240,44 @@ describe.runIf(haveKokoro)("Kokoro ONNX (integration)", () => {
     expect(f.pcm.length).toBeLessThan(n.pcm.length * 0.8);
   }, 60_000);
 });
+
+import { trimSilence } from "../src/trim.js";
+
+describe("trimSilence", () => {
+  const SR = 24000;
+  /** lead silence + a 0.5 s tone + tail silence */
+  const padded = (leadMs: number, tailMs: number) => {
+    const lead = Math.round((leadMs / 1000) * SR), tone = SR / 2, tail = Math.round((tailMs / 1000) * SR);
+    const pcm = new Float32Array(lead + tone + tail);
+    for (let i = 0; i < tone; i++) pcm[lead + i] = 0.4 * Math.sin((2 * Math.PI * 220 * i) / SR);
+    return { pcm, lead: lead / SR, tone: tone / SR };
+  };
+
+  it("removes the silence, keeps a short margin, and shifts word timings", () => {
+    const { pcm, lead } = padded(300, 450);
+    const words = [{ start: lead, end: lead + 0.25 }, { start: lead + 0.25, end: lead + 0.5 }];
+    const t = trimSilence(pcm, SR, words);
+    expect(t.leadTrimmed).toBeCloseTo(0.27, 2); // 300 ms minus the 30 ms margin
+    expect(t.pcm.length / SR).toBeLessThan(0.5 + 0.03 + 0.07); // tone + margins
+    expect(t.words![0]!.start).toBeCloseTo(0.03, 2);
+    expect(t.words![1]!.end).toBeCloseTo(0.03 + 0.5, 2);
+    expect(t.words![1]!.end).toBeLessThanOrEqual(t.pcm.length / SR);
+  });
+
+  it("keeps timings inside the trimmed audio, even when the model's last word runs into the padding", () => {
+    const { pcm, lead } = padded(300, 450);
+    const words = [{ start: lead, end: lead + 0.5 + 0.45 }]; // the model's end includes the trailing silence
+    const t = trimSilence(pcm, SR, words);
+    const dur = t.pcm.length / SR;
+    expect(dur).toBeLessThan(0.7);
+    expect(t.words![0]!.end).toBeLessThanOrEqual(dur);
+    expect(t.words![0]!.start).toBeCloseTo(0.03, 2);
+  });
+
+  it("leaves all-silent audio and null timings alone", () => {
+    const silent = new Float32Array(SR);
+    expect(trimSilence(silent, SR, null).pcm).toBe(silent);
+    const { pcm } = padded(300, 450);
+    expect(trimSilence(pcm, SR, null).words).toBeNull();
+  });
+});

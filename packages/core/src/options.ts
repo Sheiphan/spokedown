@@ -24,6 +24,8 @@ export interface ReaderOptions extends NormalizeOptions {
   /** Long sentences are split near this many characters (Kokoro limit ≈ 510 phonemes). */
   maxSegmentChars: number;
   pauses: {
+    /** Gap after each sentence that ends a chunk inside a block (half of it after a mid-sentence split). */
+    sentence: number;
     heading: number;
     afterHeading: number;
     paragraph: number;
@@ -48,7 +50,7 @@ export const DEFAULT_OPTIONS: ReaderOptions = {
   footnotes: "skip",
   images: "alt",
   maxSegmentChars: 350,
-  pauses: { heading: 700, afterHeading: 350, paragraph: 300, block: 450, thematicBreak: 700 },
+  pauses: { sentence: 150, heading: 700, afterHeading: 350, paragraph: 300, block: 450, thematicBreak: 700 },
 };
 
 export type ReaderOptionsInput = Partial<Omit<ReaderOptions, "pauses">> & { pauses?: Partial<ReaderOptions["pauses"]> };

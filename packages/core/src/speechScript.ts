@@ -105,7 +105,8 @@ class Builder {
         srcRange: [Math.min(...c.map((w) => w.srcStart)), Math.max(...c.map((w) => w.srcEnd))],
         blockRange,
         pauseBefore: i === 0 ? Math.max(pauseBefore, this.pendingPause) : 0,
-        pauseAfter: i === chunks.length - 1 ? pauseAfter : 0,
+        // inside a block: a short gap after a finished sentence, half of it after a mid-sentence split
+        pauseAfter: i === chunks.length - 1 ? pauseAfter : isSentenceEnd(c[c.length - 1]!.text) ? this.opts.pauses.sentence : Math.round(this.opts.pauses.sentence / 2),
       };
       this.segments.push(seg);
     });

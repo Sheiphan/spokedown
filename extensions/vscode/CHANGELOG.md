@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.4.0
+
+- **Much shorter gaps after full stops.** Kokoro pads every sentence with about 0.3 s of silence before and 0.45 s after; that silence is now trimmed (word highlighting stays exact), so each sentence boundary is roughly 0.5 s shorter.
+- New settings to tune the rhythm: `spokedown.pause.sentenceMs` (pause after each sentence, default 150; `0` = continuous), `spokedown.pause.blockScale` (multiplier for the longer paragraph, heading and block pauses, default 1) and `spokedown.pause.trimSilence` (turn the trimming off). Changes apply immediately, even mid-reading.
+
 ## 0.3.0
 
 - **Pronunciation dictionary** (`spokedown.pronunciations`, and **Spokedown: Fix Pronunciation…** on the word under the cursor). Respell names and acronyms such as `kubectl` → "kube control". Keys can be words, phrases or parts of identifiers; an empty value silences a word. Highlighting still follows the original text.

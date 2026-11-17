@@ -1,7 +1,7 @@
 // Connects VS Code (editors, commands, settings) to the reading session and engine.
 import * as path from "node:path";
 import * as vscode from "vscode";
-import { buildSpeechScript, segmentAtOffset, STARTER_PRONUNCIATIONS, type ReaderOptionsInput, type SpeechScript } from "@spokedown/core";
+import { buildSpeechScript, DEFAULT_OPTIONS, segmentAtOffset, STARTER_PRONUNCIATIONS, type ReaderOptionsInput, type SpeechScript } from "@spokedown/core";
 import { BUILTIN_MODELS, type Engine, type ModelConfig } from "@spokedown/engine";
 import { Highlighter } from "./highlighter.js";
 import { ReadingSession, type AudioSink, type SessionUpdate } from "./session.js";
@@ -10,6 +10,21 @@ import { StatusBar } from "./statusBar.js";
 import { shiftScript } from "./shift.js";
 import { startPointAtOffset, startPointForLine, type StartPoint } from "./startPoint.js";
 import { PreviewManager } from "./preview.js";
+
+/** Pause settings → the reader's pause table: sentence gap in ms, and a multiplier for paragraph/heading/block pauses. */
+function pausesFromConfig(c: vscode.WorkspaceConfiguration) {
+  const base = DEFAULT_OPTIONS.pauses;
+  const scale = Math.max(0, Math.min(3, c.get<number>("pause.blockScale", 1)));
+  const ms = (v: number) => Math.round(v * scale);
+  return {
+    sentence: Math.max(0, Math.min(1500, c.get<number>("pause.sentenceMs", base.sentence))),
+    heading: ms(base.heading),
+    afterHeading: ms(base.afterHeading),
+    paragraph: ms(base.paragraph),
+    block: ms(base.block),
+    thematicBreak: ms(base.thematicBreak),
+  };
+}
 
 const SPEEDS = [0.75, 0.85, 1, 1.1, 1.2, 1.35, 1.5, 1.75, 2];
 
@@ -36,6 +51,7 @@ export function readConfig() {
       frontmatter: c.get<"skip" | "announce">("reading.frontmatter", "skip"),
       maxDigits: c.get<number>("reading.numberDigits", 4),
       // the optional starter list first, so the user's own entries override it
+      pauses: pausesFromConfig(c),
       pronunciations: { ...(c.get<boolean>("starterPronunciations", false) ? STARTER_PRONUNCIATIONS : {}), ...c.get<Record<string, string>>("pronunciations", {}) },
     },
   };
@@ -288,7 +304,7 @@ export class Controller implements vscode.Disposable {
     if (e.affectsConfiguration("spokedown.models")) this.engine.setModels(cfg.models);
     if (e.affectsConfiguration("spokedown.audioOutput")) this.sinkKind = "";
     if (["model", "voice", "speed", "models"].some((k) => e.affectsConfiguration(`spokedown.${k}`))) this.session?.invalidateUpcoming();
-    if ((e.affectsConfiguration("spokedown.reading") || e.affectsConfiguration("spokedown.pronunciations") || e.affectsConfiguration("spokedown.starterPronunciations")) && this.session && this.uri) void this.rebuild();
+    if ((e.affectsConfiguration("spokedown.reading") || e.affectsConfiguration("spokedown.pronunciations") || e.affectsConfiguration("spokedown.starterPronunciations") || e.affectsConfiguration("spokedown.pause")) && this.session && this.uri) void this.rebuild();
     if (this.last && this.script) this.status.update(this.last, this.script.segments, cfg.speed, this.modelLabel());
   }
 

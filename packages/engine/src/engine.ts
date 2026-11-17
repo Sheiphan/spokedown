@@ -1,3 +1,4 @@
+import { trimSilence } from "./trim.js";
 import { alignWordTimings, type Word } from "@spokedown/core";
 import { AudioCache, cacheKey } from "./cache.js";
 import { BUILTIN_MODELS } from "./catalog.js";
@@ -12,6 +13,8 @@ export interface EngineOptions {
   modelsDir: string;
   cacheDir: string;
   cacheMaxBytes?: number;
+  /** Trim the silence models add before and after each utterance (default true). */
+  trimSilence?: boolean | (() => boolean);
   /** Test hook. */
   createBackend?: (config: ModelConfig) => TtsBackend;
 }
@@ -148,9 +151,11 @@ export class Engine {
         }
       });
     }
-    const duration = result.pcm.length / result.sampleRate;
-    const { timings, quality } = alignWordTimings(seg.words, result.words, duration);
-    return { pcm: result.pcm, sampleRate: result.sampleRate, duration, timings, quality, cached };
+    // Trimming happens after the cache, so the cached audio stays raw and the margins can be tuned.
+    const t = (typeof this.opts.trimSilence === "function" ? this.opts.trimSilence() : this.opts.trimSilence) === false ? { pcm: result.pcm, words: result.words } : trimSilence(result.pcm, result.sampleRate, result.words);
+    const duration = t.pcm.length / result.sampleRate;
+    const { timings, quality } = alignWordTimings(seg.words, t.words, duration);
+    return { pcm: t.pcm, sampleRate: result.sampleRate, duration, timings, quality, cached };
   }
 
   async dispose(): Promise<void> {

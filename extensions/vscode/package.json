@@ -2,7 +2,7 @@
   "name": "spokedown",
   "displayName": "Spokedown: Markdown Read Aloud, Word by Word",
   "description": "Read Markdown aloud with a natural local voice that highlights every word. Understands math, tables, code and diagrams. Built for technical and coding-agent docs. macOS, Windows and Linux.",
-  "version": "0.3.0",
+  "version": "0.4.0",
   "publisher": "SheiphanJoseph",
   "private": true,
   "license": "GPL-3.0-only",
@@ -461,6 +461,25 @@
           "minimum": 1,
           "maximum": 12,
           "description": "Decimals with more significant digits are rounded and read as \"about …\"."
+        },
+        "spokedown.pause.sentenceMs": {
+          "type": "number",
+          "default": 150,
+          "minimum": 0,
+          "maximum": 1500,
+          "markdownDescription": "Pause after each sentence, in milliseconds. Set to `0` for the fastest, most continuous reading. (The voice's own built-in silence around every sentence is trimmed, so this value is the whole gap.)"
+        },
+        "spokedown.pause.blockScale": {
+          "type": "number",
+          "default": 1,
+          "minimum": 0,
+          "maximum": 3,
+          "markdownDescription": "Multiplier for the longer pauses at the end of paragraphs, headings, list items, tables and code blocks. `1` is the default (about 0.3 s after a paragraph, 0.7 s before a heading); `0.5` halves them; `0` removes them."
+        },
+        "spokedown.pause.trimSilence": {
+          "type": "boolean",
+          "default": true,
+          "markdownDescription": "Cut the silence the voice adds before and after every sentence (about 0.3 s and 0.45 s for Kokoro), so `#spokedown.pause.sentenceMs#` controls the whole gap. Turn off to hear the voice's original timing. Takes effect from the next sentence."
         },
         "spokedown.pronunciations": {
           "type": "object",

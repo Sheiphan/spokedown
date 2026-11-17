@@ -97,6 +97,19 @@ equations / diagrams / frontmatter, number precision, highlight timing
 ]
 ```
 
+## Pacing
+
+Three settings control the rhythm (changes apply immediately, even mid-reading):
+
+| Setting | Default | What it does |
+|---|---|---|
+| `spokedown.speed` | `1` | Speaking rate (0.5–2). |
+| `spokedown.pause.sentenceMs` | `150` | Pause after each sentence. `0` is continuous reading. |
+| `spokedown.pause.blockScale` | `1` | Multiplier for the longer pauses after paragraphs, headings, list items, tables and code. `0.5` halves them. |
+
+The voice itself adds about 0.75 s of silence around every sentence; Spokedown trims that
+(`spokedown.pause.trimSilence`) so the pause settings are the whole gap.
+
 ## Pronunciation dictionary
 
 Technical docs are full of names a voice gets wrong. Put the cursor on a word and run
