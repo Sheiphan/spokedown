@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.4.1
+
+- Added a demo video to the README and the Marketplace page. No changes to the extension itself.
+
 ## 0.4.0
 
 - **Much shorter gaps after full stops.** Kokoro pads every sentence with about 0.3 s of silence before and 0.45 s after; that silence is now trimmed (word highlighting stays exact), so each sentence boundary is roughly 0.5 s shorter.

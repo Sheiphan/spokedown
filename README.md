@@ -15,6 +15,10 @@ Everything runs on your machine. No account, no API key, no telemetry.
 > **Status:** early (0.x). Works on **macOS, Windows and Linux** (x64 and arm64). Windows and
 > Linux support is new — please [report problems](https://github.com/Sheiphan/spokedown/issues).
 
+![Spokedown reading a Markdown file aloud, highlighting each word in the editor and in the read-along preview](https://raw.githubusercontent.com/Sheiphan/spokedown/main/docs/demo.gif)
+
+[Watch the demo with sound (MP4)](https://github.com/Sheiphan/spokedown/raw/main/docs/demo.mp4)
+
 ## Features
 
 - **Word-level highlighting in the editor** — block, sentence and the current word, mapped to the exact source text. Auto-scrolls; scroll away and a *Back to reading* button appears.
