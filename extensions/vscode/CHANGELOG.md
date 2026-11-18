@@ -1,8 +1,12 @@
 # Changelog
 
+## 0.4.2
+
+- Replaced the demo video on the README and the Marketplace page. No changes to the extension itself.
+
 ## 0.4.1
 
-- Added a demo video to the README and the Marketplace page. No changes to the extension itself.
+- Added a demo video to the README and the Marketplace page.
 
 ## 0.4.0
 

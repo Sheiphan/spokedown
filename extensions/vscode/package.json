@@ -2,7 +2,7 @@
   "name": "spokedown",
   "displayName": "Spokedown: Markdown Read Aloud, Word by Word",
   "description": "Read Markdown aloud with a natural local voice that highlights every word. Understands math, tables, code and diagrams. Built for technical and coding-agent docs. macOS, Windows and Linux.",
-  "version": "0.4.1",
+  "version": "0.4.2",
   "publisher": "SheiphanJoseph",
   "private": true,
   "license": "GPL-3.0-only",
